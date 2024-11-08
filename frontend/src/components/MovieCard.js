@@ -5,13 +5,13 @@ import Image from "next/image";
 
 const MovieCard = ({ movie }) => {
   return (
-    <div className="border p-4 rounded-lg shadow-lg bg-white">
+    <div className="w-64 border p-4 rounded-lg shadow-lg bg-white">
       <Image
         src={movie.imageURL}
         alt={`${movie.title} poster`}
         width={200}
         height={300}
-        className="rounded-lg mb-4"
+        className="rounded-lg mb-4 mx-auto"
       />
       <h3 className="text-xl text-black font-bold mb-2">{movie.title}</h3>
       <p className="text-gray-700 mb-2">{movie.description}</p>
