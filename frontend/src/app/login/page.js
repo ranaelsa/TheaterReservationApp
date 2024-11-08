@@ -1,15 +1,15 @@
 import Footer from "@/components/Footer";
-import Register from "@/components/Register";
+import Login from "@/components/Login";
 
-const RegisterPage = () => {
+const LoginPage = () => {
   return (
   <div className="flex flex-col min-h-screen">
     <div className="flex-grow">
-      <Register />
+      <Login />
     </div>
   <Footer />
   </div>
   );
 }
 
-export default RegisterPage;
+export default LoginPage;
