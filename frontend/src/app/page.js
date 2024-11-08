@@ -7,6 +7,7 @@ import MovieGrid from '../components/MovieGrid';
 import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import TheaterDropdown from '../components/TheaterDropdown';
+import { useEffect } from 'react';
 
 // Mock data for movies
 const mockMovies = [
@@ -28,6 +29,7 @@ const mockTheaters = [
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTheater, setSelectedTheater] = useState('');
+  const [isClient, setIsClient] = useState(false);
   
   const movies = mockMovies;
   const theaters = mockTheaters;
@@ -35,6 +37,11 @@ const HomePage = () => {
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  useEffect(() => {
+    setIsClient(true); // This will only execute on the client
+  }, []);
+
+  if (!isClient) return null; // Avoid rendering on the server
 
   return (
     <div>
