@@ -3,8 +3,8 @@ import Register from "@/components/register";
 
 const RegisterPage = () => {
   return (
-  <div>
-    <div>
+  <div className="flex flex-col min-h-screen">
+    <div className="flex-grow">
       <Register />
     </div>
   <Footer />
