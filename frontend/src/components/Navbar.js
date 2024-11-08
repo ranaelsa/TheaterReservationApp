@@ -6,8 +6,8 @@ const Navbar = () => {
       <div className="max-w-screen-xl mx-auto flex justify-between items-center">
         <Link href="/" className="text-3xl font-bold">AcmePlex</Link>
         <div className="flex space-x-4">
-          <Link href="/register" className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-md">Register</Link>
-          <Link href="/login" className="px-4 py-2 bg-blue-500 hover:bg-green-600 rounded-md">Login</Link>
+          <Link href="/register" className="px-4 py-2 bg-[#854d0e] hover:bg-[#a16207] rounded-md">Register</Link>
+          <Link href="/login" className="px-4 py-2 bg-[#854d0e] hover:bg-[#a16207] rounded-md">Login</Link>
         </div>
       </div>
     </nav>
