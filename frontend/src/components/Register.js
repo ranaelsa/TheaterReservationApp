@@ -16,6 +16,9 @@ const Register = () => {
   const [step, setStep] = useState(1);
 
   const validateField = (name, value) => {
+    // Skip validation if the field is empty
+    if (!value) return '';
+  
     switch (name) {
       case 'name':
         return value.length > 1 ? '' : 'Name must be at least 2 characters long.';

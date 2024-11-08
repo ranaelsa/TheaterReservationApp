@@ -9,6 +9,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
 
   const validateField = (name, value) => {
+    // Skip validation if the field is empty
+    if (!value) return '';
     switch (name) {
       case 'email':
         return /\S+@\S+\.\S+/.test(value) ? '' : 'Invalid email format.';
@@ -33,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-16 px-4 sm:px-8">
+    <div className="flex flex-col items-center mt-16 px-4 sm:px-8" >
       <h1 className="text-2xl font-bold mb-8">Login to Existing Account</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
             <input
