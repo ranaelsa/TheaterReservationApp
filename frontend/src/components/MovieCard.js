@@ -13,7 +13,6 @@ const MovieCard = ({ movie }) => {
       />
       <h3 className="text-xl text-black font-bold mb-2">{movie.title}</h3>
       <p className="text-gray-700 mb-2">{movie.description}</p>
-      <p className="text-sm text-gray-600 mb-4">Showtimes: {movie.showtimes.join(", ")}</p>
       <Link href={`/book/${movie.id}`} className="bg-[#854d0e] hover:bg-[#a16207] text-white px-4 py-2 rounded-lg transition">
         Book Now
       </Link>

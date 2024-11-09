@@ -8,6 +8,7 @@ import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import TheaterDropdown from '../components/TheaterDropdown';
 import { useEffect } from 'react';
+import FeaturedSection from '@/components/FeaturedSection';
 
 // Mock data for movies
 const mockMovies = [
@@ -47,10 +48,13 @@ const HomePage = () => {
     <div>
       <Navbar />
       <HeroSection />
+      <FeaturedSection movies={movies} />
 
       {/* Align the search bar and dropdown with padding */}
       <div className="flex flex-col items-center w-full px-4 sm:px-8">
         <div className="w-full max-w-7xl mt-8">
+        <h1 className="text-5xl font-bold mb-4">In Theatres Now</h1>
+
           <div className="flex w-full gap-4">
             <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
             <TheaterDropdown theaters={mockTheaters} selectedTheater={selectedTheater} onSelectTheater={setSelectedTheater} />
