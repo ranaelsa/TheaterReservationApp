@@ -1,10 +1,10 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import MovieCard from './MovieCard';
 
-const FeaturedSection = ({ movies }) => {
+const FeaturedSection = ({ movies, theaters }) => {
   return (
     <div className="flex flex-col items-center mt-8 pb-12">
         <h1 className="text-5xl font-bold mb-4">Upcoming Releases</h1>
@@ -25,7 +25,7 @@ const FeaturedSection = ({ movies }) => {
       >
         {movies.map((movie) => (
           <SwiperSlide key={movie.id}>
-            <MovieCard movie={movie} />
+            <MovieCard movie={movie} theaters={theaters} />
           </SwiperSlide>
         ))}
       </Swiper>

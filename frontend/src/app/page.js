@@ -1,14 +1,14 @@
-"use client"
-
-import { useState } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import MovieGrid from '../components/MovieGrid';
 import SearchBar from '../components/SearchBar';
 import Footer from '../components/Footer';
 import TheaterDropdown from '../components/TheaterDropdown';
-import { useEffect } from 'react';
 import FeaturedSection from '@/components/FeaturedSection';
+import { ShowtimeProvider } from '@/context/ShowtimeContext'; // Ensure you import the provider
+import ShowtimeWindow from '@/components/ShowtimeWindow';
 import './globals.css';
 
 // Mock data for movies
@@ -21,24 +21,17 @@ const mockMovies = [
   // Add more movies here
 ];
 
-const mockTheaters = [
-  { id: 1, name: "Theater 1" },
-  { id: 2, name: "Theater 2" },
-  { id: 3, name: "Theater 3" },
-  // Add more theaters here
-];
-
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTheater, setSelectedTheater] = useState('');
   const [isClient, setIsClient] = useState(false);
-  
+
   const movies = mockMovies;
-  const theaters = mockTheaters;
 
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   useEffect(() => {
     setIsClient(true); // This will only execute on the client
   }, []);
@@ -46,29 +39,34 @@ const HomePage = () => {
   if (!isClient) return null; // Avoid rendering on the server
 
   return (
-    <div>
-      <Navbar />
-      <HeroSection />
-      <FeaturedSection movies={movies} />
+    <ShowtimeProvider> {/* Wrap the entire content in ShowtimeProvider */}
+      <div>
+        <Navbar />
+        <HeroSection />
+        <FeaturedSection movies={movies} />
+        
+        {/* Align the search bar and dropdown with padding */}
+        <div className="flex flex-col items-center w-full px-4 sm:px-8">
+          <div className="w-full max-w-7xl mt-8">
+            <h1 className="text-5xl font-bold mb-4">In Theatres Now</h1>
 
-      {/* Align the search bar and dropdown with padding */}
-      <div className="flex flex-col items-center w-full px-4 sm:px-8">
-        <div className="w-full max-w-7xl mt-8">
-        <h1 className="text-5xl font-bold mb-4">In Theatres Now</h1>
+            <div className="flex w-full gap-4">
+              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <TheaterDropdown selectedTheater={selectedTheater} onSelectTheater={setSelectedTheater} />
+            </div>
+          </div>
 
-          <div className="flex w-full gap-4">
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <TheaterDropdown theaters={mockTheaters} selectedTheater={selectedTheater} onSelectTheater={setSelectedTheater} />
+          <div className="w-full max-w-7xl mt-8">
+            <MovieGrid movies={filteredMovies} /> {/* Pass theaters here */}
           </div>
         </div>
 
-        <div className="w-full max-w-7xl mt-8">
-          <MovieGrid movies={filteredMovies} />
-        </div>
+        <Footer />
+        
+        {/* Conditionally render ShowtimeWindow based on context */}
+        <ShowtimeWindow />
       </div>
-      
-      <Footer />
-    </div>
+    </ShowtimeProvider>
   );
 };
 
