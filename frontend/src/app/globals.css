@@ -35,3 +35,13 @@ body {
   min-width: 150px;
 }
 
+/* Custom style for navigation arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #854d0e; /* Change to your desired color */
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #a16207; /* Color on hover */
+}

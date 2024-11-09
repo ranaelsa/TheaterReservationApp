@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import TheaterDropdown from '../components/TheaterDropdown';
 import { useEffect } from 'react';
 import FeaturedSection from '@/components/FeaturedSection';
+import './globals.css';
 
 // Mock data for movies
 const mockMovies = [
