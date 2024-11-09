@@ -1,23 +1,56 @@
 package com.project.java_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import javax.validation.constraints.*;
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class RegisteredUser {
+    // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name is required")
+    @Size(max = 100)
     private String name;
+
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    @Column(unique = true)
     private String email;
+
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    @NotBlank(message = "Password is required")
+    @JsonIgnore
     private String password;
+
     private String address;
+
+    // Payment Information
+    @JsonIgnore
     private int cardNumber;
+
+    @JsonIgnore
     private int expiryDate;
+
+    @JsonIgnore
     private int cvc;
+
+    // Relationships
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Ticket> tickets;
+
+    public RegisteredUser(String name, String email, String password, String address, int cardNumber, int expiryDate, int cvc) {
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.address = address;
+    this.cardNumber = cardNumber;
+    this.expiryDate = expiryDate;
+    this.cvc = cvc;
+    }
 
     // Getters and setters
     public String getName() {

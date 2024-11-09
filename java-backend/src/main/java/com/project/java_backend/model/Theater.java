@@ -1,43 +1,52 @@
 package com.project.java_backend.model;
 
+import jakarta.persistence.*;
+import javax.validation.constraints.*;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "theaters")
 public class Theater {
 
+    // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Theater name is required")
+    @Size(max = 100, message = "Theater name cannot exceed 100 characters")
     private String name;
+
+    @NotBlank(message = "Location is required")
+    @Size(max = 200, message = "Location cannot exceed 200 characters")
     private String location;
 
-    // One-to-Many with Seat
+    // Relationships
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Seat> seats;
 
-    // One-to-Many with Showtime
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Showtime> showtimes;
 
-    // Constructors, getters, and setters
+    // Constructors
+    public Theater() {
+        // Default constructor
+    }
+
+    public Theater(String name, String location) {
+        this.name = name;
+        this.location = location;
+    }
+
+    // ID
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Name
     public String getName() {
         return name;
     }
@@ -46,6 +55,7 @@ public class Theater {
         this.name = name;
     }
 
+    // Location
     public String getLocation() {
         return location;
     }
@@ -53,4 +63,23 @@ public class Theater {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    // Seats
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
+    }
+
+    // Showtimes
+    public List<Showtime> getShowtimes() {
+        return showtimes;
+    }
+
+    public void setShowtimes(List<Showtime> showtimes) {
+        this.showtimes = showtimes;
+    }
+
 }
