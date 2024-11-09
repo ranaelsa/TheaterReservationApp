@@ -19,6 +19,8 @@ public class Showtime {
     @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
 
+    private Double price;
+
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
@@ -59,6 +61,15 @@ public class Showtime {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    // Price
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     // Theater
