@@ -6,7 +6,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 flex justify-center items-center h-full text-center">
           <div>
-            <h1 className="text-5xl font-bold mb-4">Your gateway to unforgettable cinema</h1>
+            <h1 className="text-6xl font-bold mb-4">Your gateway to unforgettable cinema</h1>
             <p className="text-xl mb-6">Catch the latest movies on the big screen and book your tickets now.</p>
           </div>
         </div>
