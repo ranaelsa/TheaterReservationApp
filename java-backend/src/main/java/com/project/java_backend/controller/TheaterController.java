@@ -2,35 +2,31 @@ package com.project.java_backend.controller;
 
 import com.project.java_backend.model.Theater;
 import com.project.java_backend.service.TheaterService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/theaters")
 public class TheaterController {
 
-    private final TheaterService theaterService;
-
     @Autowired
-    public TheaterController(TheaterService theaterService) {
-        this.theaterService = theaterService;
-    }
+    private TheaterService theaterService;
 
     // Get all theaters
     @GetMapping
-    public ResponseEntity<List<Theater>> getAllTheaters() {
-        List<Theater> theaters = theaterService.getAllTheaters();
-        return ResponseEntity.ok(theaters);
+    public List<Theater> getAllTheaters() {
+        return theaterService.getAllTheaters();
     }
 
     // Get theater by ID
     @GetMapping("/{id}")
     public ResponseEntity<Theater> getTheaterById(@PathVariable Long id) {
-        return theaterService.getTheaterById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Theater theater = theaterService.getTheaterById(id);
+        return ResponseEntity.ok(theater);
     }
 
     // Create new theater
@@ -40,25 +36,17 @@ public class TheaterController {
         return ResponseEntity.ok(createdTheater);
     }
 
-    // Update existing theater
+    // Update theater
     @PutMapping("/{id}")
     public ResponseEntity<Theater> updateTheater(@PathVariable Long id, @RequestBody Theater theaterDetails) {
-        try {
-            Theater updatedTheater = theaterService.updateTheater(id, theaterDetails);
-            return ResponseEntity.ok(updatedTheater);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Theater updatedTheater = theaterService.updateTheater(id, theaterDetails);
+        return ResponseEntity.ok(updatedTheater);
     }
 
-    // Delete theater by ID
+    // Delete theater
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheater(@PathVariable Long id) {
-        try {
-            theaterService.deleteTheater(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        theaterService.deleteTheater(id);
+        return ResponseEntity.noContent().build();
     }
 }
