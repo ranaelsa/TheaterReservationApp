@@ -2,20 +2,28 @@ package com.project.java_backend.service;
 
 import com.project.java_backend.model.Theater;
 import com.project.java_backend.repository.TheaterRepository;
+import com.project.java_backend.exception.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TheaterService {
 
-    private final TheaterRepository theaterRepository;
-
     @Autowired
-    public TheaterService(TheaterRepository theaterRepository) {
-        this.theaterRepository = theaterRepository;
+    private TheaterRepository theaterRepository;
+
+    // Create new theater
+    public Theater createTheater(Theater theater) {
+        return theaterRepository.save(theater);
+    }
+
+    // Get theater by ID
+    public Theater getTheaterById(Long id) {
+        return theaterRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id " + id));
     }
 
     // Get all theaters
@@ -23,33 +31,20 @@ public class TheaterService {
         return theaterRepository.findAll();
     }
 
-    // Get theater by ID
-    public Optional<Theater> getTheaterById(Long id) {
-        return theaterRepository.findById(id);
+    // Update theater
+    public Theater updateTheater(Long id, Theater updatedTheater) {
+        Theater existingTheater = getTheaterById(id);
+
+        existingTheater.setName(updatedTheater.getName());
+        existingTheater.setLocation(updatedTheater.getLocation());
+
+        return theaterRepository.save(existingTheater);
     }
 
-    // Create new theater
-    public Theater createTheater(Theater theater) {
-        // Business logic can be added here (e.g., validation)
-        return theaterRepository.save(theater);
-    }
-
-    // Update existing theater
-    public Theater updateTheater(Long id, Theater theaterDetails) {
-        Theater theater = theaterRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Theater not found"));
-
-        theater.setName(theaterDetails.getName());
-        theater.setLocation(theaterDetails.getLocation());
-        // Update other fields if necessary
-
-        return theaterRepository.save(theater);
-    }
-
-    // Delete theater by ID
+    // Delete theater
     public void deleteTheater(Long id) {
         if (!theaterRepository.existsById(id)) {
-            throw new IllegalArgumentException("Theater not found");
+            throw new ResourceNotFoundException("Theater not found with id " + id);
         }
         theaterRepository.deleteById(id);
     }

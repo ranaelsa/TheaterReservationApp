@@ -2,59 +2,78 @@ package com.project.java_backend.service;
 
 import com.project.java_backend.model.RegisteredUser;
 import com.project.java_backend.repository.RegisteredUserRepository;
+import com.project.java_backend.exception.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RegisteredUserService {
 
     @Autowired
-    private RegisteredUserRepository registeredUserRepository;
+    private RegisteredUserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Get all users
     public List<RegisteredUser> getAllUsers() {
-        return registeredUserRepository.findAll();
+        return userRepository.findAll();
     }
 
     // Get user by ID
-    public Optional<RegisteredUser> getUserById(Long id) {
-        return registeredUserRepository.findById(id);
+    public RegisteredUser getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
     }
 
     // Create new user
     public RegisteredUser createUser(RegisteredUser user) {
-        if (registeredUserRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
         }
-        // TODO: Hash the password before saving
-        // user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return registeredUserRepository.save(user);
+        // Hash the password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     // Update existing user
     public RegisteredUser updateUser(Long id, RegisteredUser userDetails) {
-        RegisteredUser user = registeredUserRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        RegisteredUser user = getUserById(id);
 
         user.setName(userDetails.getName());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword()); // Remember to hash the password
         user.setAddress(userDetails.getAddress());
         user.setCardNumber(userDetails.getCardNumber());
         user.setExpiryDate(userDetails.getExpiryDate());
         user.setCvc(userDetails.getCvc());
+        // If updating password
+        if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        }
 
-        return registeredUserRepository.save(user);
+        return userRepository.save(user);
     }
 
     // Delete user by ID
     public void deleteUser(Long id) {
-        if (!registeredUserRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found");
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id " + id);
         }
-        registeredUserRepository.deleteById(id);
+        userRepository.deleteById(id);
+    }
+
+    // Authenticate user
+    public RegisteredUser authenticate(String email, String password) {
+        RegisteredUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return user;
+        } else {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
     }
 }
