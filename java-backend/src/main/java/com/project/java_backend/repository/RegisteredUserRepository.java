@@ -10,11 +10,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, Long> {
-    // Define any custom query methods here
+    // Find by email
     Optional<RegisteredUser> findByEmail(String email);
     
+    // Find by email and password
     Optional<RegisteredUser> findByEmailAndPassword(String email, String password);
 
+    // Find if email exists
     boolean existsByEmail(String email);
 
 }

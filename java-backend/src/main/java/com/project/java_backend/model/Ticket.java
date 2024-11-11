@@ -21,9 +21,14 @@ public class Ticket {
     @NotNull(message = "Purchase time is required")
     private LocalDateTime purchaseTime;
 
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    private String email; // Email of the purchaser
+
     // Relationships
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    // Optional relationship to RegisteredUser
+    @ManyToOne(optional = true) // Allow nullable user for non-registered users
+    @JoinColumn(name = "user_id", nullable = true)
     @JsonBackReference
     private RegisteredUser user;
 
@@ -42,10 +47,10 @@ public class Ticket {
         // Default constructor
     }
 
-    public Ticket(Double price, LocalDateTime purchaseTime, RegisteredUser user,
-            Showtime showtime, Seat seat) {
+    public Ticket(Double price, LocalDateTime purchaseTime, String email, RegisteredUser user, Showtime showtime, Seat seat) {
         this.price = price;
         this.purchaseTime = purchaseTime;
+        this.email = email;
         this.user = user;
         this.showtime = showtime;
         this.seat = seat;
@@ -72,6 +77,14 @@ public class Ticket {
 
     public void setPurchaseTime(LocalDateTime purchaseTime) {
         this.purchaseTime = purchaseTime;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     // User

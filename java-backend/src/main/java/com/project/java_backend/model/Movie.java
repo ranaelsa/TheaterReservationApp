@@ -28,6 +28,9 @@ public class Movie {
     @Size(max = 10, message = "Rating cannot exceed 10 characters")
     private String rating; // e.g., "PG-13", "R"
 
+    @NotNull
+    private boolean isPublic = false; // Controls visibility; defaults to false for early access
+
     // Relationships
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -43,6 +46,7 @@ public class Movie {
         this.description = description;
         this.duration = duration;
         this.rating = rating;
+        this.isPublic = false; // Default to early access
     }
 
     // ID
@@ -86,6 +90,15 @@ public class Movie {
         this.rating = rating;
     }
 
+    // isPublic
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
     // Showtimes
     public List<Showtime> getShowtimes() {
         return showtimes;
@@ -94,6 +107,4 @@ public class Movie {
     public void setShowtimes(List<Showtime> showtimes) {
         this.showtimes = showtimes;
     }
-
-    
 }

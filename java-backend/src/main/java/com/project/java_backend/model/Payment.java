@@ -22,21 +22,16 @@ public class Payment {
     @NotNull(message = "Payment date is required")
     private LocalDateTime paymentDate;
 
-    // Relationships
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ticket_id", nullable = false)
-    private Ticket associatedTicket;
-
     // Constructors
     public Payment() {
         // Default constructor
     }
 
-    public Payment(Double amount, String paymentMethod, Ticket associatedTicket) {
+    public Payment(Double amount, String paymentMethod) {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentDate = LocalDateTime.now();
-        this.associatedTicket = associatedTicket;
+
     }
 
     // Getters and Setters
@@ -64,12 +59,8 @@ public class Payment {
         return paymentDate;
     }
 
-    public Ticket getAssociatedTicket() {
-        return associatedTicket;
-    }
-
-    public void setAssociatedTicket(Ticket associatedTicket) {
-        this.associatedTicket = associatedTicket;
+    public void setPaymentDate(LocalDateTime date) {
+        this.paymentDate = date;
     }
 }
 
