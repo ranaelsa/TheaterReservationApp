@@ -27,7 +27,7 @@ public class TicketService {
     private EmailService emailService;
 
     // Create a new ticket
-    // Assumes coupon redemption handled in controller
+    // Assumes controller enforces 10% seat booking limit for RUs on non-public movies, and coupon redemption logic
     public Ticket createTicket(Double price, String paymentMethod, Showtime showtime, Seat seat, String email, RegisteredUser user) {
         // Reserve seat
         seatAvailabilityService.reserveSeat(seat.getId(), showtime.getId());
