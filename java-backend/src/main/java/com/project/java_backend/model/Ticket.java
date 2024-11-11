@@ -22,8 +22,9 @@ public class Ticket {
     private LocalDateTime purchaseTime;
 
     // Relationships
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    // Optional relationship to RegisteredUser
+    @ManyToOne(optional = true) // Allow nullable user for non-registered users
+    @JoinColumn(name = "user_id", nullable = true)
     @JsonBackReference
     private RegisteredUser user;
 

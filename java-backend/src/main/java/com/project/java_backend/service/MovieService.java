@@ -37,8 +37,12 @@ public class MovieService {
     private void notifyRegisteredUsers(Movie movie) {
         List<RegisteredUser> registeredUsers = registeredUserRepository.findAll(); // retrieves all registered users
         String subject = "New Movie Available: " + movie.getTitle();
-        String text = "Dear Registered User,\n\nWe're excited to announce a new movie has been added to AcmePlex!\n\n" +
-                "Movie Title: " + movie.getTitle() + "\n" +
+        String text = """
+                      Dear Registered User,
+                      
+                      We're excited to announce a new movie has been added to AcmePlex!
+                      
+                      Movie Title: """ + movie.getTitle() + "\n" +
                 "Description: " + movie.getDescription() + "\n" +
                 "Rating: " + movie.getRating() + "\n\n" +
                 "Log in now to see more details and book your tickets!\n\n" +

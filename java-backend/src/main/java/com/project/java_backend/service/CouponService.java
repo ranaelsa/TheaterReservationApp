@@ -8,7 +8,6 @@ import com.project.java_backend.repository.CouponRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CouponService {

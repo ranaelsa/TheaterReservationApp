@@ -7,8 +7,5 @@ import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    // Find all payments associated with a specific ticket
-    List<Payment> findByTicketId(Long ticketId);
-
 }
 
