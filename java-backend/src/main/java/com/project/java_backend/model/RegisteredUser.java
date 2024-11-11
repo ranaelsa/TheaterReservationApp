@@ -3,7 +3,6 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class RegisteredUser {
@@ -23,33 +22,37 @@ public class RegisteredUser {
 
     @Size(min = 6, message = "Password must be at least 6 characters")
     @NotBlank(message = "Password is required")
-    @JsonIgnore
     private String password;
 
     private String address;
 
     // Payment Information
-    @JsonIgnore
-    private int cardNumber;
+    @Size(min = 16, max = 16, message = "Card number must be 16 digits")
+    private long cardNumber;
 
-    @JsonIgnore
+    @Size(min = 6, max = 6, message = "Date must be in format DDMMYY")
     private int expiryDate;
 
-    @JsonIgnore
+    @Size(min = 3, max = 3, message = "CVC must be 3 digits")
     private int cvc;
 
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ticket> tickets;
 
+    //Default constructor
+    public RegisteredUser(){
+
+    }
+
     public RegisteredUser(String name, String email, String password, String address, int cardNumber, int expiryDate, int cvc) {
-    this.name = name;
-    this.email = email;
-    this.password = password;
-    this.address = address;
-    this.cardNumber = cardNumber;
-    this.expiryDate = expiryDate;
-    this.cvc = cvc;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.cardNumber = cardNumber;
+        this.expiryDate = expiryDate;
+        this.cvc = cvc;
     }
 
     // Getters and setters
@@ -85,11 +88,11 @@ public class RegisteredUser {
         this.address = address;
     }
 
-    public int getCardNumber() {
+    public long getCardNumber() {
         return cardNumber;
     }
 
-    public void setCardNumber(int cardNumber) {
+    public void setCardNumber(long cardNumber) {
         this.cardNumber = cardNumber;
     }
 
