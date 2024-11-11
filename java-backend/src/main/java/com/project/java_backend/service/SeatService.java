@@ -43,6 +43,7 @@ public class SeatService {
     public Seat updateSeat(Long id, Seat updatedSeat) {
         Seat existingSeat = getSeatById(id);
         existingSeat.setSeatNumber(updatedSeat.getSeatNumber());
+        existingSeat.setTheater(updatedSeat.getTheater());
         return seatRepository.save(existingSeat);
     }
 

@@ -26,9 +26,21 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id " + id));
     }
 
-    // Get all movies
+    // Retrieve all public movies (for ordinary users)
+    public List<Movie> getPublicMovies() {
+        return movieRepository.findByIsPublic(true);
+    }
+
+    // Get all movies (for registered users)
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
+    }
+
+    // Update the movie's public status
+    public Movie makeMoviePublic(Long id) {
+        Movie movie = getMovieById(id);
+        movie.setPublic(true);
+        return movieRepository.save(movie);
     }
 
     // Update movie
