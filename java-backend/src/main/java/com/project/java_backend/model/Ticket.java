@@ -47,13 +47,13 @@ public class Ticket {
         // Default constructor
     }
 
-    public Ticket(Double price, LocalDateTime purchaseTime, String email, RegisteredUser user, Showtime showtime, Seat seat) {
+    public Ticket(Double price, String email, RegisteredUser user, Showtime showtime, Seat seat) {
         this.price = price;
-        this.purchaseTime = purchaseTime;
         this.email = email;
         this.user = user;
         this.showtime = showtime;
         this.seat = seat;
+        this.purchaseTime = LocalDateTime.now();
     }
     
     // ID
