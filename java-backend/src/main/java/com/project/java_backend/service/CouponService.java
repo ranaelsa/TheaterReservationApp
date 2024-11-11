@@ -28,11 +28,6 @@ public class CouponService {
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found with code " + couponCode));
     }
 
-    // Get all unredeemed coupons
-    public List<Coupon> getUnredeemedCoupons() {
-        return couponRepository.findByStatus("Unredeemed");
-    }
-
     // Update coupon status to redeemed
     public Coupon redeemCoupon(String couponCode) {
         Coupon coupon = getCouponByCode(couponCode);

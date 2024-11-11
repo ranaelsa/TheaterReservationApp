@@ -25,7 +25,7 @@ public class Payment {
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "ticket_id", nullable = false)
-    private Ticket associatedTicket;
+    private Ticket ticket;
 
     // Constructors
     public Payment() {
@@ -36,7 +36,7 @@ public class Payment {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentDate = LocalDateTime.now();
-        this.associatedTicket = associatedTicket;
+        this.ticket = associatedTicket;
     }
 
     // Getters and Setters
@@ -64,12 +64,12 @@ public class Payment {
         return paymentDate;
     }
 
-    public Ticket getAssociatedTicket() {
-        return associatedTicket;
+    public Ticket getticket() {
+        return ticket;
     }
 
-    public void setAssociatedTicket(Ticket associatedTicket) {
-        this.associatedTicket = associatedTicket;
+    public void setAssociatedTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 }
 
