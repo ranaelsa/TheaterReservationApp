@@ -1,7 +1,9 @@
 "use client"
 import React, { useState } from 'react';
+import useApi from '../hooks/useApi';
 
 const Register = () => {
+  const { callApi, loading, error } = useApi('/api/users/register', 'POST');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -61,7 +63,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
     ['card_number', 'expiry_month', 'expiry_year', 'cvc'].forEach(field => {
@@ -69,7 +71,10 @@ const Register = () => {
       if (error) currentErrors[field] = error;
     });
     if (Object.keys(currentErrors).length === 0) {
-      console.log('User registered:', formData);
+      const response = await callApi(formData);
+      if (responose) {
+        console.log('User registered successfully:', response);
+      }
     } else {
       setErrors(currentErrors);
     }
