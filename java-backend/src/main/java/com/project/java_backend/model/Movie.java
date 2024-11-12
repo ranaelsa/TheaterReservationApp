@@ -31,6 +31,8 @@ public class Movie {
     @NotNull
     private boolean isPublic = false; // Controls visibility; defaults to false for early access
 
+    private String imageFileName;
+
     // Relationships
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -41,11 +43,12 @@ public class Movie {
         // Default constructor
     }
 
-    public Movie(String title, String description, Integer duration, String rating) {
+    public Movie(String title, String description, Integer duration, String rating, String imageFileName) {
         this.title = title;
         this.description = description;
         this.duration = duration;
         this.rating = rating;
+        this.imageFileName = imageFileName;
         this.isPublic = false; // Default to early access
     }
 
@@ -106,5 +109,14 @@ public class Movie {
 
     public void setShowtimes(List<Showtime> showtimes) {
         this.showtimes = showtimes;
+    }
+
+    // image filename
+    public String getImageFileName() {
+        return imageFileName;
+    }
+
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
     }
 }

@@ -30,7 +30,7 @@ public class CouponService {
     // Update coupon status to redeemed
     public Coupon redeemCoupon(String couponCode) {
         Coupon coupon = getCouponByCode(couponCode);
-        if (!coupon.getStatus().equals("Unredeemed")) {
+        if (!coupon.getStatus().equals("Unredeemed") || isCouponExpired(couponCode)) {
             throw new IllegalStateException("Coupon has already been redeemed or is invalid.");
         }
         coupon.setStatus("Redeemed");

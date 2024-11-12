@@ -31,7 +31,6 @@ public class RegisteredUserController {
     // Register a new user
     @PostMapping(value="/register", consumes="application/json", produces="application/json")
     public ResponseEntity<RegisteredUser> registerUser(@RequestBody RegisteredUser user) {
-        System.out.println(user);
         RegisteredUser createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
