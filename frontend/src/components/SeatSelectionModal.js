@@ -1,14 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SeatSelectionModal = ({ showtime, onClose }) => {
+  const router = useRouter();
+
   // Define the seat layout with row and seat labels
   const initialSeats = {
-    A: ["unavailable", "unavailable", "available", "available", "available", "available", "available", "available", "available", "unavailable", "unavailable"],
-    B: ["unavailable", "available", "available", "available", "available", "available", "available", "available", "available", "available", "unavailable"],
-    C: ["available", "available", "available", "available", "available", "available", "available", "available", "available", "available", "available"],
-    D: ["available", "available", "available", "available", "available", "available", "available", "available", "available", "available", "available"],
-    E: ["available", "available", "available", "available", "available", "available", "available", "available", "available", "available", "available"],
-    F: ["unavailable", "available", "available", "available", "available", "available", "available", "available", "available", "available", "unavailable"],
+    A: [
+      "unavailable",
+      "unavailable",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "unavailable",
+      "unavailable",
+    ],
+    B: [
+      "unavailable",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "unavailable",
+    ],
+    C: [
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+    ],
+    D: [
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+    ],
+    E: [
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+    ],
+    F: [
+      "unavailable",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+      "unavailable",
+    ],
   };
 
   const [seats, setSeats] = useState(initialSeats);
@@ -23,8 +98,11 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
           if (seat === "selected") return "available"; // Deselect if selected
         }
         return seat; // Leave unchanged if unavailable
-      })
+      }),
     }));
+  };
+  const handleProceed = () => {
+    router.push("/pay");
   };
 
   return (
@@ -37,7 +115,9 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
         >
           &times;
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-black">Select Seats for {showtime}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">
+          Select Seats for {showtime}
+        </h2>
 
         {/* Stage Indicator */}
         <div className="text-center mb-4">
@@ -55,25 +135,40 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
                 <React.Fragment key={`${row}-${seatIndex}`}>
                   {/* Insert spacing for aisles between columns 2-3 and 9-10 */}
                   {seatIndex === 2 || seatIndex === 9 ? (
-                    <div key={`${row}-aisle-${seatIndex}`} className="w-6"></div>
+                    <div
+                      key={`${row}-aisle-${seatIndex}`}
+                      className="w-6"
+                    ></div>
                   ) : null}
                   <div
                     key={`${row}-${seatIndex}`}
                     className={`w-10 h-10 flex items-center justify-center rounded cursor-pointer text-white ${
-                      seat === "available" ? "bg-green-500" :
-                      seat === "selected" ? "bg-blue-500" :
-                      "bg-gray-400 cursor-not-allowed"
+                      seat === "available"
+                        ? "bg-green-500"
+                        : seat === "selected"
+                        ? "bg-blue-500"
+                        : "bg-gray-400 cursor-not-allowed"
                     }`}
                     onClick={() =>
                       seat !== "unavailable" && handleSeatClick(row, seatIndex)
                     }
                   >
-                    {row}{seatIndex + 1}
+                    {row}
+                    {seatIndex + 1}
                   </div>
                 </React.Fragment>
               ))}
             </div>
           ))}
+        </div>
+        {/* Proceed Button */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleProceed}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold"
+          >
+            Proceed
+          </button>
         </div>
       </div>
     </div>
