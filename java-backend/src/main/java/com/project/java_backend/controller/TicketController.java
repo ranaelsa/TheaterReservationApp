@@ -25,7 +25,7 @@ public class TicketController {
 	private SeatService seatService;
 
     // Create a new ticket
-    @PostMapping("/create")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public Ticket createTicket(@RequestParam Double price,
                                @RequestParam String email,
                                @RequestParam(required = false) Long userId,
@@ -40,27 +40,27 @@ public class TicketController {
     }
 
     // Cancel a ticket by ID
-    @DeleteMapping("/cancel/{id}")
+    @DeleteMapping(value = "/cancel/{id}", consumes = "application/json", produces = "application/json")
     public String cancelTicket(@PathVariable Long id) {
         ticketService.cancelTicket(id);
         return "Ticket canceled successfully.";
     }
 
     // Retrieve a list of tickets for a specific user
-    @GetMapping("/user/{userId}")
+    @GetMapping(value = "/user/{userId}", consumes = "application/json", produces = "application/json")
     public List<Ticket> getTicketsByUserId(@PathVariable Long userId) {
         return ticketService.getTicketsByUserId(userId);
     }
 
     // Retrieve a single ticket by ID
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public Ticket getTicketById(@PathVariable Long id) {
         return ticketService.getTicketById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id " + id));
     }
 
     // Retrieve all tickets (for admin purposes)
-    @GetMapping("/all")
+    @GetMapping(consumes = "application/json", produces = "application/json")
     public List<Ticket> getAllTickets() {
         return ticketService.getAllTickets();
     }
