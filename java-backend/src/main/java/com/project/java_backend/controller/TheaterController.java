@@ -32,7 +32,9 @@ public class TheaterController {
     // Create new theater
     @PostMapping(consumes="application/json", produces="application/json")
     public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
-        Theater createdTheater = theaterService.createTheater(theater);
+        int numRows = 6;
+        int seatsPerRow = 11;
+        Theater createdTheater = theaterService.createTheater(theater, numRows, seatsPerRow);
         return ResponseEntity.ok(createdTheater);
     }
 
