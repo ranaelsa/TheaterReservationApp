@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TicketService {
@@ -63,12 +65,26 @@ public class TicketService {
 
     private String buildCancellationEmail(Ticket ticket, Coupon coupon) {
         return "Your ticket has been successfully canceled.\n\n" +
-               "Ticket ID: " + ticket.getId() + "\n" +
-               "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
-               "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
-               "Refund Amount: $" + coupon.getAmount() + "\n\n" +
-               "Coupon Code: " + coupon.getCouponCode() + "\n" +
-               "Expiration Date: " + coupon.getExpirationDate() + "\n" +
-               "Thank you for choosing AcmePlex!";
+                "Ticket ID: " + ticket.getId() + "\n" +
+                "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
+                "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
+                "Refund Amount: $" + coupon.getAmount() + "\n\n" +
+                "Coupon Code: " + coupon.getCouponCode() + "\n" +
+                "Expiration Date: " + coupon.getExpirationDate() + "\n" +
+                "Thank you for choosing AcmePlex!";
+    }
+    // Retrieve a single ticket by ID
+    public Optional<Ticket> getTicketById(Long id) {
+        return ticketRepository.findById(id);
+    }
+
+    // Retrieve all tickets (useful for admin purposes)
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    // Retrieve tickets for a specific user by user ID
+    public List<Ticket> getTicketsByUserId(Long userId) {
+        return ticketRepository.findByUserId(userId);
     }
 }
