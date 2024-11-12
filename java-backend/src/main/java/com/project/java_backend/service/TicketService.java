@@ -18,63 +18,15 @@ public class TicketService {
     private SeatAvailabilityService seatAvailabilityService;
 
     @Autowired
-    private PaymentService paymentService;
-
-    @Autowired
     private CouponService couponService;
 
     @Autowired
     private EmailService emailService;
 
-    // Create a new ticket
-    public Ticket createTicket(Double price, String paymentMethod, Showtime showtime, Seat seat, String email, RegisteredUser user, String couponCode) {
-        // Check 10% restriction for RUs on non-public movies
-        if (!showtime.getMovie().isPublic() && user != null && !canRegisterUserBook(showtime.getId())) {
-            throw new IllegalStateException("Only 10% of seats can be booked by registered users before public release.");
-        }
-
-        // Redeem coupon if provided
-        if (couponCode != null) {
-            price = applyCouponDiscount(couponCode, price);
-        }
-
-        // Reserve seat
-        seatAvailabilityService.reserveSeat(seat.getId(), showtime.getId());
-
-        // Process payment
-        paymentService.createPayment(price, paymentMethod);
-
-        // Save ticket
+    // Create a new ticket (used by PurchaseTicketService to finalize purchase)
+    public Ticket createTicket(Double price, String email, RegisteredUser user, Showtime showtime, Seat seat) {
         Ticket ticket = new Ticket(price, email, user, showtime, seat);
-        Ticket savedTicket = ticketRepository.save(ticket);
-
-        // Send purchase confirmation email
-        emailService.sendSimpleEmail(email, "Ticket Confirmation", buildPurchaseEmail(ticket));
-
-        return savedTicket;
-    }
-
-    // Check if RU can book for non-public movies (10% rule)
-    private boolean canRegisterUserBook(Long showtimeId) {
-        return !seatAvailabilityService.isTenPercentOrMoreBooked(showtimeId);
-    }
-
-    // Apply coupon discount
-    private Double applyCouponDiscount(String couponCode, Double price) {
-        if (couponService.isCouponExpired(couponCode)) {
-            throw new IllegalArgumentException("Coupon is expired");
-        }
-        Coupon coupon = couponService.redeemCoupon(couponCode);
-        return price - coupon.getAmount();
-    }
-
-    private String buildPurchaseEmail(Ticket ticket) {
-        return "Thank you for your purchase!\n\n" +
-               "Ticket ID: " + ticket.getId() + "\n" +
-               "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
-               "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
-               "Price: $" + ticket.getPrice() + "\n\n" +
-               "Enjoy your movie!";
+        return ticketRepository.save(ticket);
     }
 
     // Cancel ticket and issue a coupon
