@@ -22,35 +22,35 @@ public class RegisteredUserController {
     }
 
     // Get user by ID
-    @GetMapping("/{id}")
+    @GetMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<RegisteredUser> getUserById(@PathVariable Long id) {
         RegisteredUser user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
     // Register a new user
-    @PostMapping("/register")
+    @PostMapping(value="/register", consumes="application/json", produces="application/json")
     public ResponseEntity<RegisteredUser> registerUser(@RequestBody RegisteredUser user) {
         RegisteredUser createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
     // Update user
-    @PutMapping("/{id}")
+    @PutMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<RegisteredUser> updateUser(@PathVariable Long id, @RequestBody RegisteredUser userDetails) {
         RegisteredUser updatedUser = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }
 
     // Delete user
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     // Authenticate user
-    @PostMapping("/login")
+    @PostMapping(value="/login", consumes="application/json", produces="application/json")
     public ResponseEntity<RegisteredUser> authenticateUser(@RequestBody RegisteredUser loginRequest) {
         RegisteredUser authenticatedUser = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         return ResponseEntity.ok(authenticatedUser);

@@ -78,14 +78,14 @@ public class MovieService {
 
     // Update movie
     public Movie updateMovie(Long id, Movie updatedMovie) {
-        Movie existingMovie = getMovieById(id);
+        Movie movie = getMovieById(id);
 
-        existingMovie.setTitle(updatedMovie.getTitle());
-        existingMovie.setDescription(updatedMovie.getDescription());
-        existingMovie.setDuration(updatedMovie.getDuration());
-        existingMovie.setRating(updatedMovie.getRating());
+        if(updatedMovie.getTitle() != null && !updatedMovie.getTitle().isBlank()){movie.setTitle(updatedMovie.getTitle());}
+        if(updatedMovie.getDescription() != null && !updatedMovie.getDescription().isBlank()){movie.setDescription(updatedMovie.getDescription());}
+        if(updatedMovie.getDuration() != 0){movie.setDuration(updatedMovie.getDuration());}
+        if(updatedMovie.getRating() != null && !updatedMovie.getRating().isBlank()){movie.setRating(updatedMovie.getRating());}
 
-        return movieRepository.save(existingMovie);
+        return movieRepository.save(movie);
     }
 
     // Delete movie

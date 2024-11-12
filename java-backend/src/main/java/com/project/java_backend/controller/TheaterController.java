@@ -23,28 +23,28 @@ public class TheaterController {
     }
 
     // Get theater by ID
-    @GetMapping("/{id}")
+    @GetMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<Theater> getTheaterById(@PathVariable Long id) {
         Theater theater = theaterService.getTheaterById(id);
         return ResponseEntity.ok(theater);
     }
 
     // Create new theater
-    @PostMapping
+    @PostMapping(consumes="application/json", produces="application/json")
     public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
         Theater createdTheater = theaterService.createTheater(theater);
         return ResponseEntity.ok(createdTheater);
     }
 
     // Update theater
-    @PutMapping("/{id}")
+    @PutMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<Theater> updateTheater(@PathVariable Long id, @RequestBody Theater theaterDetails) {
         Theater updatedTheater = theaterService.updateTheater(id, theaterDetails);
         return ResponseEntity.ok(updatedTheater);
     }
 
     // Delete theater
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value="/{id}", consumes="application/json", produces="application/json")
     public ResponseEntity<Void> deleteTheater(@PathVariable Long id) {
         theaterService.deleteTheater(id);
         return ResponseEntity.noContent().build();
