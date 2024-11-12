@@ -22,16 +22,24 @@ public class Payment {
     @NotNull(message = "Payment date is required")
     private LocalDateTime paymentDate;
 
+    @NotBlank(message = "Transaction ID is required")
+    @Column(unique = true)
+    private String transactionId;
+
+    @Size(min = 4, max = 4, message = "Last four digits of card must be 4 digits")
+    private String cardLastFourDigits; // Optional, only for card payments
+
     // Constructors
     public Payment() {
         // Default constructor
     }
 
-    public Payment(Double amount, String paymentMethod) {
+    public Payment(Double amount, String paymentMethod, String transactionId, String cardLastFourDigits) {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.cardLastFourDigits = cardLastFourDigits;
         this.paymentDate = LocalDateTime.now();
-
     }
 
     // Getters and Setters
@@ -59,8 +67,23 @@ public class Payment {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDateTime date) {
-        this.paymentDate = date;
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public String getCardLastFourDigits() {
+        return cardLastFourDigits;
+    }
+
+    public void setCardLastFourDigits(String cardLastFourDigits) {
+        this.cardLastFourDigits = cardLastFourDigits;
     }
 }
-

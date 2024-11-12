@@ -8,6 +8,7 @@ import com.project.java_backend.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
@@ -15,10 +16,27 @@ public class PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    // Create a new payment
-    public Payment createPayment(Double amount, String paymentMethod) {
-        Payment payment = new Payment(amount, paymentMethod);
+    // Create a new payment with a dummy call to a third-party payment service
+    public Payment createPayment(Double amount, String paymentMethod, String cardLastFourDigits) {
+        // Simulate a call to a third-party payment provider
+        String transactionId = processPaymentWithProvider(amount, paymentMethod);
+
+        // Create and save the payment record with the transaction ID and masked card details
+        Payment payment = new Payment(amount, paymentMethod, transactionId, cardLastFourDigits);
         return paymentRepository.save(payment);
+    }
+
+    // Simulate payment processing with a third-party provider
+    private String processPaymentWithProvider(Double amount, String paymentMethod) {
+        // This is a dummy implementation for the sake of example
+        System.out.println("Processing payment of $" + amount + " via " + paymentMethod);
+
+        // Simulate a successful payment by generating a unique transaction ID
+        String transactionId = UUID.randomUUID().toString();
+        System.out.println("Payment successful. Transaction ID: " + transactionId);
+
+        // Return the transaction ID to save in the database
+        return transactionId;
     }
 
     // Retrieve all payments
@@ -49,4 +67,3 @@ public class PaymentService {
         paymentRepository.deleteById(id);
     }
 }
-
