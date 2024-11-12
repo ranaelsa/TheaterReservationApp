@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import useApi from '../hooks/useApi';
 
 const Register = () => {
-  const { callApi, loading, error } = useApi('/api/users/register', 'POST');
+  const { callApi, loading, error } = useApi('http://localhost:8080/api/users/register', 'POST');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,7 +72,7 @@ const Register = () => {
     });
     if (Object.keys(currentErrors).length === 0) {
       const response = await callApi(formData);
-      if (responose) {
+      if (response) {
         console.log('User registered successfully:', response);
       }
     } else {
