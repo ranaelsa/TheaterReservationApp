@@ -22,8 +22,7 @@ public class Payment {
     @NotNull(message = "Payment date is required")
     private LocalDateTime paymentDate;
 
-    @NotBlank(message = "Transaction ID is required")
-    @Column(unique = true)
+    @Column(unique = true, nullable = true) // Nullable, only relevant for card payments
     private String transactionId;
 
     @Size(min = 4, max = 4, message = "Last four digits of card must be 4 digits")
