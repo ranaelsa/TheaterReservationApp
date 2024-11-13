@@ -23,7 +23,7 @@ public class Seat {
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("theater-seats")
     private Theater theater;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)

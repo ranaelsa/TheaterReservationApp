@@ -28,13 +28,13 @@ public class RegisteredUser {
 
     // Payment Information
     @Size(min = 16, max = 16, message = "Card number must be 16 digits")
-    private long cardNumber;
+    private String cardNumber;
 
-    @Size(min = 6, max = 6, message = "Date must be in format DDMMYY")
-    private int expiryDate;
+    @Size(min = 4, max = 4, message = "Date must be in format MMYY")
+    private String expiryDate;
 
     @Size(min = 3, max = 3, message = "CVC must be 3 digits")
-    private int cvc;
+    private String cvc;
 
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,7 +45,7 @@ public class RegisteredUser {
 
     }
 
-    public RegisteredUser(String name, String email, String password, String address, int cardNumber, int expiryDate, int cvc) {
+    public RegisteredUser(String name, String email, String password, String address, String cardNumber, String expiryDate, String cvc) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -88,27 +88,27 @@ public class RegisteredUser {
         this.address = address;
     }
 
-    public long getCardNumber() {
+    public String getCardNumber() {
         return cardNumber;
     }
 
-    public void setCardNumber(long cardNumber) {
+    public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
 
-    public int getExpiryDate() {
+    public String getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(int expiryDate) {
+    public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
 
-    public int getCvc() {
+    public String getCvc() {
         return cvc;
     }
 
-    public void setCvc(int cvc) {
+    public void setCvc(String cvc) {
         this.cvc = cvc;
     }
 }

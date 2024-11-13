@@ -1,13 +1,9 @@
 package com.project.java_backend.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.project.java_backend.model.RegisteredUser;
-import com.project.java_backend.model.Seat;
-import com.project.java_backend.model.Showtime;
 
 @Service
 public class PurchaseAccountService extends PaymentService{
@@ -17,12 +13,16 @@ public class PurchaseAccountService extends PaymentService{
 
 	public RegisteredUser purchaseAccount(RegisteredUser user) {
 
-		makePayment(20.0, Long.toString(user.getCardNumber()), user.getEmail());
+		makePayment(20.0, user.getCardNumber(), user.getEmail());
 
 		registeredUserService.createUser(user);
 
-		
-
 		return user;
 	}
+
+	@Override
+	protected String buildEmailReceipt(Double amount, String paymentMethod) {
+        return super.buildEmailReceipt(amount, paymentMethod) + "Item purchased: Account (1 year)\n"
+                                                                + "This is an annual charge\n";
+    }
 }

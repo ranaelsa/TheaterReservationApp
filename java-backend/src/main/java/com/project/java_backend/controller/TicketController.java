@@ -1,12 +1,6 @@
 package com.project.java_backend.controller;
 
 import com.project.java_backend.model.Ticket;
-import com.project.java_backend.model.RegisteredUser;
-import com.project.java_backend.model.Seat;
-import com.project.java_backend.model.Showtime;
-import com.project.java_backend.service.RegisteredUserService;
-import com.project.java_backend.service.SeatService;
-import com.project.java_backend.service.ShowtimeService;
 import com.project.java_backend.service.TicketService;
 import com.project.java_backend.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +14,24 @@ public class TicketController {
 
     @Autowired
 	private TicketService ticketService;
-	private ShowtimeService showtimeService;
-	private RegisteredUserService registeredUserService;
-	private SeatService seatService;
+	// private ShowtimeService showtimeService;
+	// private RegisteredUserService registeredUserService;
+	// private SeatService seatService;
 
-    // Create a new ticket
-    @PostMapping(consumes = "application/json", produces = "application/json")
-    public Ticket createTicket(@RequestParam Double price,
-                               @RequestParam String email,
-                               @RequestParam(required = false) Long userId,
-                               @RequestParam Long showtimeId,
-                               @RequestParam Long seatId) {
-        // Assume user, showtime, and seat are fetched from services or repositories
-        RegisteredUser user = (userId != null) ? registeredUserService.getUserById(userId) : null;// Fetch user by userId : null;
-        Showtime showtime = showtimeService.getShowtimeById(showtimeId); // Fetch showtime by showtimeId;
-        Seat seat = seatService.getSeatById(seatId); // Fetch seat by seatId;
+    // Deprecated, see paymentController. Create a new ticket
+    // @PostMapping(consumes = "application/json", produces = "application/json")
+    // public Ticket createTicket(@RequestParam Double price,
+    //                            @RequestParam String email,
+    //                            @RequestParam(required = false) Long userId,
+    //                            @RequestParam Long showtimeId,
+    //                            @RequestParam Long seatId) {
+    //     // Assume user, showtime, and seat are fetched from services or repositories
+    //     RegisteredUser user = (userId != null) ? registeredUserService.getUserById(userId) : null;// Fetch user by userId : null;
+    //     Showtime showtime = showtimeService.getShowtimeById(showtimeId); // Fetch showtime by showtimeId;
+    //     Seat seat = seatService.getSeatById(seatId); // Fetch seat by seatId;
 
-        return ticketService.createTicket(price, email, user, showtime, seat);
-    }
+    //     return ticketService.createTicket(price, email, user, showtime, seat);
+    // }
 
     // Cancel a ticket by ID
     @DeleteMapping(value = "/cancel/{id}", consumes = "application/json", produces = "application/json")

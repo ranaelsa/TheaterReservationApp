@@ -35,7 +35,7 @@ public class Movie {
 
     // Relationships
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("movie-showtimes")
     private List<Showtime> showtimes;
 
     // Constructors
