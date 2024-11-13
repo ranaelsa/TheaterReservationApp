@@ -68,7 +68,7 @@ public class TicketService {
                 "Ticket ID: " + ticket.getId() + "\n" +
                 "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
                 "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
-                "Refund Amount: $" + coupon.getAmount() + "\n\n" +
+                "Refund Amount: $" + String.format("%.2f", coupon.getAmount()) + "\n\n" +
                 "Coupon Code: " + coupon.getCouponCode() + "\n" +
                 "Expiration Date: " + coupon.getExpirationDate() + "\n" +
                 "Thank you for choosing AcmePlex!";

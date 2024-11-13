@@ -42,7 +42,7 @@ public class MovieService {
                       
                       We're excited to announce a new movie has been added to AcmePlex!
                       
-                      Movie Title: """ + movie.getTitle() + "\n" +
+                      Movie Title: """ + " " + movie.getTitle() + "\n" +
                 "Description: " + movie.getDescription() + "\n" +
                 "Rating: " + movie.getRating() + "\n\n" +
                 "Log in now to see more details and book your tickets!\n\n" +

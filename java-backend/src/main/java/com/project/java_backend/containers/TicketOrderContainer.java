@@ -3,15 +3,13 @@ package com.project.java_backend.containers;
 import java.util.List;
 
 import com.project.java_backend.model.RegisteredUser;
-import com.project.java_backend.model.Seat;
-import com.project.java_backend.model.Showtime;
 
 public class TicketOrderContainer {
 	private RegisteredUser registeredUser;
 	private String email;
 	private String cardNumber;
-	private Showtime showtime;
-	private List<Seat> seats;
+	private Long showtimeId;
+	private List<Long> seatIds;
 
 	public TicketOrderContainer() {
 		// Default constructor
@@ -43,19 +41,19 @@ public class TicketOrderContainer {
 		this.cardNumber = cardNumber;
 	}
 
-	public Showtime getShowtime() {
-		return showtime;
+	public Long getShowtimeId() {
+		return showtimeId;
 	}
 
-	public void setShowtime(Showtime showtime) {
-		this.showtime = showtime;
+	public void setShowtimeId(Long showtimeId) {
+		this.showtimeId = showtimeId;
 	}
 
-	public List<Seat> getSeats() {
-		return seats;
+	public List<Long> getSeatIds() {
+		return seatIds;
 	}
 
-	public void setSeats(List<Seat> seats) {
-		this.seats = seats;
+	public void setSeatIds(List<Long> seatIds) {
+		this.seatIds = seatIds;
 	}
 }

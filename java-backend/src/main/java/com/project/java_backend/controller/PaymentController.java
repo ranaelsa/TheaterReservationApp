@@ -27,7 +27,9 @@ public class PaymentController {
 
 	@Autowired
 	private PurchaseTicketService purchaseTicketService;
+	@Autowired
 	private PurchaseAccountService purchaseAccountService;
+	@Autowired
 	private PaymentService paymentService;
 
 	// Purchase and create tickets
@@ -35,8 +37,8 @@ public class PaymentController {
 	public ResponseEntity<List<Ticket>> purchaseTickets(@RequestBody TicketOrderContainer orderInfo) {
 		List<Ticket> createdTickets = purchaseTicketService.purchaseTickets(orderInfo.getEmail(), 
 																			orderInfo.getRegisteredUser(), 
-																			orderInfo.getShowtime(), 
-																			orderInfo.getSeats(), 
+																			orderInfo.getShowtimeId(), 
+																			orderInfo.getSeatIds(), 
 																			orderInfo.getCardNumber());
 		return ResponseEntity.ok(createdTickets);
 	}

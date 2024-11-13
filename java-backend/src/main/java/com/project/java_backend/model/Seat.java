@@ -35,6 +35,7 @@ public class Seat {
     // Constructors
     public Seat() {
         // Default constructor
+        this.price = 15.99;
     }
 
     public Seat(String seatNumber, Theater theater) {

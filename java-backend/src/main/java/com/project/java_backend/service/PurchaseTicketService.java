@@ -17,13 +17,19 @@ public class PurchaseTicketService extends PaymentService{
     @Autowired
     private SeatAvailabilityService seatAvailabilityService;
 
+    @Autowired
+    private SeatService seatService;
+
+    @Autowired
+    private ShowtimeService showtimeService;
+
     // Purchase 1 or more tickets for a single showtime
-    public List<Ticket> purchaseTickets(String email, RegisteredUser user, Showtime showtime, List<Seat> seats, String cardNumber) {
+    public List<Ticket> purchaseTickets(String email, RegisteredUser user, Long showtimeId, List<Long> seatIds, String cardNumber) {
 
         // Calculate the total cost of tickets
         Double price = 0.0;
-        for (int i = 0; i < seats.size(); i++) {
-            price += seats.get(i).getPrice();
+        for (int i = 0; i < seatIds.size(); i++) {
+            price += seatService.getSeatById(seatIds.get(i)).getPrice();
         }
 
         // Make payment before continuing
@@ -36,9 +42,13 @@ public class PurchaseTicketService extends PaymentService{
 
         // Reserve the seats and create tickets
         List<Ticket> tickets = new ArrayList<Ticket>();
-        for (int i = 0; i < seats.size(); i++) {
-            seatAvailabilityService.reserveSeat(seats.get(i).getId(), showtime.getId());
-            tickets.add(ticketService.createTicket(seats.get(i).getPrice(), email, user, showtime, seats.get(i)));
+        for (int i = 0; i < seatIds.size(); i++) {
+            seatAvailabilityService.reserveSeat(seatIds.get(i), showtimeId);
+            tickets.add(ticketService.createTicket(seatService.getSeatById(seatIds.get(i)).getPrice(), 
+                                                    email, 
+                                                    user, 
+                                                    showtimeService.getShowtimeById(showtimeId), 
+                                                    seatService.getSeatById(seatIds.get(i))));
         }
 
         // Send tickets via email
@@ -59,7 +69,7 @@ public class PurchaseTicketService extends PaymentService{
                             "Theater: " + tickets.get(0).getSeat().getTheater().getName() + "\n";
         for (int i = 0; i < tickets.size(); i++) {
             emailbody = emailbody.concat(
-                "\nTicket " + i+
+                "Ticket " + i + "\n" +
                 "\tTicket ID: " + tickets.get(i).getId().toString() + "\n" +
                 "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n"
             );
