@@ -24,12 +24,12 @@ public class Showtime {
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("theater-showtimes")
     private Theater theater;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "movie_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("movie-showtimes")
     private Movie movie;
 
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)

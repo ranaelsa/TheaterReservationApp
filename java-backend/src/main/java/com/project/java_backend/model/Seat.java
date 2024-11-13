@@ -18,10 +18,12 @@ public class Seat {
     @Size(max = 5, message = "Seat number cannot exceed 5 characters")
     private String seatNumber; // e.g., "A1", "B2"
 
+    private Double price;
+
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("theater-seats")
     private Theater theater;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -33,16 +35,27 @@ public class Seat {
     // Constructors
     public Seat() {
         // Default constructor
+        this.price = 15.99;
     }
 
     public Seat(String seatNumber, Theater theater) {
         this.seatNumber = seatNumber;
         this.theater = theater;
+        this.price = 15.99;
     }
 
     // ID
     public Long getId() {
         return id;
+    }
+
+    // Price
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     // Seat Number

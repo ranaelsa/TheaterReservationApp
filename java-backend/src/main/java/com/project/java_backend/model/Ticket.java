@@ -29,17 +29,17 @@ public class Ticket {
     // Optional relationship to RegisteredUser
     @ManyToOne(optional = true) // Allow nullable user for non-registered users
     @JoinColumn(name = "user_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference("user-tickets")
     private RegisteredUser user;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "showtime_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("ticket-showtime")
     private Showtime showtime;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "seat_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("ticket-seat")
     private Seat seat;
 
     // Constructors
@@ -51,6 +51,14 @@ public class Ticket {
         this.price = price;
         this.email = email;
         this.user = user;
+        this.showtime = showtime;
+        this.seat = seat;
+        this.purchaseTime = LocalDateTime.now();
+    }
+
+    public Ticket(Double price, String email, Showtime showtime, Seat seat) {
+        this.price = price;
+        this.email = email;
         this.showtime = showtime;
         this.seat = seat;
         this.purchaseTime = LocalDateTime.now();

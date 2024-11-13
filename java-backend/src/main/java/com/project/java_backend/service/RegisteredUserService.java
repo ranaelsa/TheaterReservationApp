@@ -47,9 +47,9 @@ public class RegisteredUserService {
 
         if(userDetails.getName() != null && !userDetails.getName().isBlank()){user.setName(userDetails.getName());}
         if(userDetails.getAddress() != null && !userDetails.getAddress().isBlank()){user.setAddress(userDetails.getAddress());}
-        if(userDetails.getCardNumber() > 0){user.setCardNumber(userDetails.getCardNumber());}
-        if(userDetails.getExpiryDate() > 0){user.setExpiryDate(userDetails.getExpiryDate());}
-        if(userDetails.getCvc() > 0){user.setCvc(userDetails.getCvc());}
+        if(userDetails.getCardNumber() != null && !userDetails.getCardNumber().isBlank()){user.setCardNumber(userDetails.getCardNumber());}
+        if(userDetails.getExpiryDate() != null && !userDetails.getExpiryDate().isBlank()){user.setExpiryDate(userDetails.getExpiryDate());}
+        if(userDetails.getCvc() != null && !userDetails.getCvc().isBlank()){user.setCvc(userDetails.getCvc());}
         // If updating password
         if (userDetails.getPassword() != null && !userDetails.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));

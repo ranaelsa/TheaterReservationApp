@@ -28,12 +28,12 @@ public class RegisteredUserController {
         return ResponseEntity.ok(user);
     }
 
-    // Register a new user
-    @PostMapping(value="/register", consumes="application/json", produces="application/json")
-    public ResponseEntity<RegisteredUser> registerUser(@RequestBody RegisteredUser user) {
-        RegisteredUser createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
-    }
+    // Deprecated, see paymentcontroller. Register a new user
+    // @PostMapping(value="/register", consumes="application/json", produces="application/json")
+    // public ResponseEntity<RegisteredUser> registerUser(@RequestBody RegisteredUser user) {
+    //     RegisteredUser createdUser = userService.createUser(user);
+    //     return ResponseEntity.ok(createdUser);
+    // }
 
     // Update user
     @PutMapping(value="/{id}", consumes="application/json", produces="application/json")

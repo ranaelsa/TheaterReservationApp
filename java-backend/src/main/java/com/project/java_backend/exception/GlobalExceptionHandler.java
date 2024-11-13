@@ -14,6 +14,20 @@ public class GlobalExceptionHandler {
 			.body(ex.getMessage());
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<Object> handleIllegalStateException(IllegalStateException ex) {
+		return ResponseEntity
+			.status(HttpStatus.NOT_ACCEPTABLE)
+			.body(ex.getMessage());
+	}
+
+	@ExceptionHandler(SeatNotAvailableException.class)
+	public ResponseEntity<Object> handleSeatNotAvailableException(SeatNotAvailableException ex) {
+		return ResponseEntity
+			.status(HttpStatus.NOT_ACCEPTABLE)
+			.body(ex.getMessage());
+	}
+
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
 		return ResponseEntity

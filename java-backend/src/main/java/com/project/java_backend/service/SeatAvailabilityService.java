@@ -30,8 +30,7 @@ public class SeatAvailabilityService {
     // Initialize seat availability for a new showtime
     public void initializeSeatAvailabilityForShowtime(Long showtimeId) {
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Showtime not found with id " + showtimeId));
-
+            .orElseThrow(() -> new ResourceNotFoundException("Showtime not found with id " + showtimeId));
         // Get all seats in the theater associated with the showtime
         List<Seat> seats = seatRepository.findByTheaterId(showtime.getTheater().getId());
 
@@ -69,6 +68,12 @@ public class SeatAvailabilityService {
             throw new SeatNotAvailableException("Seat is already reserved");
         }
 
+        // Handle 10% limit on advance seat sales
+        Showtime showtime = showtimeRepository.findById(showtimeId)
+            .orElseThrow(() -> new ResourceNotFoundException("Showtime not found with id " + showtimeId));
+        if (!showtime.getMovie().isPublic() && isTenPercentOrMoreBooked(showtimeId)) {
+            throw new IllegalStateException("Only 10% of seats can be booked by registered users before public release.");
+        }
         // Set seat to unavailable and save
         seatAvailability.setIsAvailable(false);
         return seatAvailabilityRepository.save(seatAvailability);

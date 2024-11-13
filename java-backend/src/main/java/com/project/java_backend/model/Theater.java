@@ -24,11 +24,11 @@ public class Theater {
 
     // Relationships
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("theater-seats")
     private List<Seat> seats;
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("theater-showtimes")
     private List<Showtime> showtimes;
 
     // Constructors

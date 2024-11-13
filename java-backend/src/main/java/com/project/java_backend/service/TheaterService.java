@@ -15,6 +15,8 @@ public class TheaterService {
 
     @Autowired
     private TheaterRepository theaterRepository;
+
+    @Autowired
     private SeatService seatService;
 
     // Create new theater with automatic seat generation

@@ -1,11 +1,15 @@
 package com.project.java_backend.service;
 
 import com.project.java_backend.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PurchaseTicketService {
+public class PurchaseTicketService extends PaymentService{
 
     @Autowired
     private TicketService ticketService;
@@ -14,36 +18,62 @@ public class PurchaseTicketService {
     private SeatAvailabilityService seatAvailabilityService;
 
     @Autowired
-    private EmailService emailService;
+    private SeatService seatService;
 
-    public Ticket finalizePurchase(Double price, String email, RegisteredUser user, Showtime showtime, Seat seat) {
-        // Enforce booking restrictions for registered users and non-public movies
-        enforceBookingRestrictions(showtime, user);
+    @Autowired
+    private ShowtimeService showtimeService;
 
-        // Reserve the seat
-        seatAvailabilityService.reserveSeat(seat.getId(), showtime.getId());
+    // Purchase 1 or more tickets for a single showtime
+    public List<Ticket> purchaseTickets(String email, RegisteredUser user, Long showtimeId, List<Long> seatIds, String cardNumber) {
 
-        // Create the ticket
-        Ticket ticket = ticketService.createTicket(price, email, user, showtime, seat);
-
-        // Send purchase confirmation email
-        emailService.sendSimpleEmail(email, "Ticket Confirmation", buildPurchaseEmail(ticket));
-
-        return ticket;
-    }
-
-    private void enforceBookingRestrictions(Showtime showtime, RegisteredUser user) {
-        if (!showtime.getMovie().isPublic() && user != null && seatAvailabilityService.isTenPercentOrMoreBooked(showtime.getId())) {
-            throw new IllegalStateException("Only 10% of seats can be booked by registered users before public release.");
+        // Calculate the total cost of tickets
+        Double price = 0.0;
+        for (int i = 0; i < seatIds.size(); i++) {
+            price += seatService.getSeatById(seatIds.get(i)).getPrice();
         }
+
+        // Make payment before continuing
+        if (cardNumber == null) {
+            //For payment covered completely by coupon
+            makePayment(price, email);
+        } else {
+            makePayment(price, email, cardNumber);
+        }
+
+        // Reserve the seats and create tickets
+        List<Ticket> tickets = new ArrayList<Ticket>();
+        for (int i = 0; i < seatIds.size(); i++) {
+            seatAvailabilityService.reserveSeat(seatIds.get(i), showtimeId);
+            tickets.add(ticketService.createTicket(seatService.getSeatById(seatIds.get(i)).getPrice(), 
+                                                    email, 
+                                                    user, 
+                                                    showtimeService.getShowtimeById(showtimeId), 
+                                                    seatService.getSeatById(seatIds.get(i))));
+        }
+
+        // Send tickets via email
+        emailService.sendSimpleEmail(email, "Your Tickets", buildTicketEmail(tickets));
+
+        return tickets;
     }
 
-    private String buildPurchaseEmail(Ticket ticket) {
-        return "Thank you for your purchase!\n\n" +
-               "Ticket ID: " + ticket.getId() + "\n" +
-               "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
-               "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
-               "Price: $" + ticket.getPrice() + "\n\n" +
-               "Enjoy your movie!";
+    @Override
+    protected String buildEmailReceipt(Double amount, String paymentMethod) {
+        return super.buildEmailReceipt(amount, paymentMethod) + "Item purchased: Ticket\n"
+                                                                + "You will receive your tickets by email shortly\n";
+    }
+
+    private String buildTicketEmail(List<Ticket> tickets) {
+        String emailbody = "Your tickets are attached below. Enjoy!\n\n" +
+                            "Showtime: " + tickets.get(0).getShowtime().getStartTime().toString() + "\n" +
+                            "Theater: " + tickets.get(0).getSeat().getTheater().getName() + "\n";
+        for (int i = 0; i < tickets.size(); i++) {
+            emailbody = emailbody.concat(
+                "Ticket " + i + "\n" +
+                "\tTicket ID: " + tickets.get(i).getId().toString() + "\n" +
+                "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n"
+            );
+        } 
+        return emailbody;
     }
 }
