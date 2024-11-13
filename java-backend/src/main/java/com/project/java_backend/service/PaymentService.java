@@ -16,27 +16,52 @@ public class PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    // Create a new payment with a dummy call to a third-party payment service
-    public Payment createPayment(Double amount, String paymentMethod, String cardLastFourDigits) {
-        // Simulate a call to a third-party payment provider
-        String transactionId = processPaymentWithProvider(amount, paymentMethod);
+    @Autowired
+    protected EmailService emailService;
 
+    // Create a new payment with a mock call to a third-party payment service
+    public Payment makePayment(Double amount, String cardnumber, String email) {
+        String paymentMethod = "card";
+        // Simulate a call to a third-party payment provider
+        String transactionId = processPaymentWithProvider(amount, paymentMethod, cardnumber);
+        String cardMask = cardnumber.substring(cardnumber.length() - 4);
         // Create and save the payment record with the transaction ID and masked card details
-        Payment payment = new Payment(amount, paymentMethod, transactionId, cardLastFourDigits);
+        Payment payment = new Payment(amount, paymentMethod, transactionId, cardMask);
+        emailService.sendSimpleEmail(email, "Payment Confirmation", buildEmailReceipt(amount, paymentMethod));
+        return paymentRepository.save(payment);
+    }
+
+    // ONLY for purchases where the coupon has covered the entire cost
+    public Payment makePayment(Double amount, String email) {
+        String paymentMethod = "coupon";
+        Payment payment = new Payment(amount, paymentMethod);
+        emailService.sendSimpleEmail(email, "Payment Confirmation", buildEmailReceipt(amount, paymentMethod));
         return paymentRepository.save(payment);
     }
 
     // Simulate payment processing with a third-party provider
-    private String processPaymentWithProvider(Double amount, String paymentMethod) {
-        // This is a dummy implementation for the sake of example
-        System.out.println("Processing payment of $" + amount + " via " + paymentMethod);
+    private String processPaymentWithProvider(Double amount, String paymentMethod, String cardNumber) {
 
-        // Simulate a successful payment by generating a unique transaction ID
-        String transactionId = UUID.randomUUID().toString();
-        System.out.println("Payment successful. Transaction ID: " + transactionId);
+        if (cardNumber.length() < 16 || paymentMethod.isBlank() || amount < 0.01) {
+            throw new IllegalArgumentException("Payment failed");
+        } else {
 
-        // Return the transaction ID to save in the database
-        return transactionId;
+             // This is a dummy implementation for the sake of example
+            System.out.println("Processing payment of $" + amount + " via " + paymentMethod);
+
+            // Simulate a successful payment by generating a unique transaction ID
+            String transactionId = UUID.randomUUID().toString();
+            System.out.println("Payment successful. Transaction ID: " + transactionId);
+
+            // Return the transaction ID to save in the database
+            return transactionId;
+        }
+    }
+
+    protected String buildEmailReceipt(Double amount, String paymentMethod) {
+        return  "Thank you for your purchase at AcmePlex Cinemas!\n\n" +
+                "Amount: $" + amount.toString() + "\n" +
+                "Payment method: " + paymentMethod + "\n";
     }
 
     // Retrieve all payments

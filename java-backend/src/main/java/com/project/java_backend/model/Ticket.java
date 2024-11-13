@@ -55,6 +55,14 @@ public class Ticket {
         this.seat = seat;
         this.purchaseTime = LocalDateTime.now();
     }
+
+    public Ticket(Double price, String email, Showtime showtime, Seat seat) {
+        this.price = price;
+        this.email = email;
+        this.showtime = showtime;
+        this.seat = seat;
+        this.purchaseTime = LocalDateTime.now();
+    }
     
     // ID
     public Long getId() {

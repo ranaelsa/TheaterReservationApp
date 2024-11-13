@@ -41,6 +41,11 @@ public class Payment {
         this.paymentDate = LocalDateTime.now();
     }
 
+    public Payment(Double amount, String paymentMethod) {
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

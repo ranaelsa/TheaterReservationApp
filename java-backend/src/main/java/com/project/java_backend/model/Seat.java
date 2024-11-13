@@ -18,6 +18,8 @@ public class Seat {
     @Size(max = 5, message = "Seat number cannot exceed 5 characters")
     private String seatNumber; // e.g., "A1", "B2"
 
+    private Double price;
+
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
@@ -38,11 +40,21 @@ public class Seat {
     public Seat(String seatNumber, Theater theater) {
         this.seatNumber = seatNumber;
         this.theater = theater;
+        this.price = 15.99;
     }
 
     // ID
     public Long getId() {
         return id;
+    }
+
+    // Price
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     // Seat Number
