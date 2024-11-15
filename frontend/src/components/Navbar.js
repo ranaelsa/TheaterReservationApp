@@ -24,6 +24,10 @@ const Navbar = () => {
       <div className="max-w-screen-xl mx-auto flex justify-between items-center">
         <Link href="/" className="text-3xl font-bold">AcmePlex</Link>
         <div className="flex space-x-4">
+          {/* Always visible buttons */}
+          <Link href="/cancel" className="px-4 py-2 bg-[#854d0e] hover:bg-[#a16207] rounded-md">Cancel Ticket</Link>
+
+          {/* Conditionally visible buttons based on login state */}
           {!isLoggedIn ? (
             <>
               <Link href="/register" className="px-4 py-2 bg-[#854d0e] hover:bg-[#a16207] rounded-md">Register</Link>
