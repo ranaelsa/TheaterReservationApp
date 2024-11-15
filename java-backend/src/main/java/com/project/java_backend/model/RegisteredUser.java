@@ -111,4 +111,8 @@ public class RegisteredUser {
     public void setCvc(String cvc) {
         this.cvc = cvc;
     }
+
+    public Long getId() {
+        return id;
+    }
 }

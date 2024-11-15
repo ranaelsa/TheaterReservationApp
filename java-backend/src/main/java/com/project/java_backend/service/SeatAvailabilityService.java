@@ -71,7 +71,7 @@ public class SeatAvailabilityService {
         // Handle 10% limit on advance seat sales
         Showtime showtime = showtimeRepository.findById(showtimeId)
             .orElseThrow(() -> new ResourceNotFoundException("Showtime not found with id " + showtimeId));
-        if (!showtime.getMovie().isPublic() && isTenPercentOrMoreBooked(showtimeId)) {
+        if (!showtime.getMovie().isPublic() && isTenPercentOrMoreBooked(showtimeId, 1)) {
             throw new IllegalStateException("Only 10% of seats can be booked by registered users before public release.");
         }
         // Set seat to unavailable and save
@@ -89,14 +89,14 @@ public class SeatAvailabilityService {
     }
 
     // Check if 10% or more seats are booked for a showtime (to check when registered users book seats for a non-public movie)
-    public boolean isTenPercentOrMoreBooked(Long showtimeId) {
+    public boolean isTenPercentOrMoreBooked(Long showtimeId, int additionalSeats) {
         long totalSeats = seatAvailabilityRepository.countByIdShowtimeId(showtimeId);
-        long bookedSeats = seatAvailabilityRepository.countByIdShowtimeIdAndIsAvailableFalse(showtimeId);
+        long bookedSeats = seatAvailabilityRepository.countByIdShowtimeIdAndIsAvailableFalse(showtimeId) + additionalSeats;
 
         // Calculate 10% of total seats
         double tenPercentThreshold = totalSeats * 0.10;
 
         // Check if booked seats are equal to or exceed 10% threshold
-        return bookedSeats >= tenPercentThreshold;
+        return bookedSeats > tenPercentThreshold;
     }
 }

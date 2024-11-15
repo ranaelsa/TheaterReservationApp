@@ -32,6 +32,12 @@ public class PurchaseTicketService extends PaymentService{
             price += seatService.getSeatById(seatIds.get(i)).getPrice();
         }
 
+        // Validate restriction on 10% early bookings
+        if (!showtimeService.getShowtimeById(showtimeId).getMovie().isPublic() && 
+            seatAvailabilityService.isTenPercentOrMoreBooked(showtimeId, seatIds.size())) {
+                throw new IllegalStateException("Only 10% of seats can be booked by registered users before public release.");
+            }
+
         // Make payment before continuing
         if (cardNumber == null) {
             //For payment covered completely by coupon

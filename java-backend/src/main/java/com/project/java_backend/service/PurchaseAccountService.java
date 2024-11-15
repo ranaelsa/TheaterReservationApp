@@ -13,6 +13,10 @@ public class PurchaseAccountService extends PaymentService{
 
 	public RegisteredUser purchaseAccount(RegisteredUser user) {
 
+		// Validate user inputs before processing payment
+		RegisteredUser testUser = registeredUserService.createUser(user);
+		registeredUserService.deleteUser(testUser.getId());
+
 		makePayment(20.0, user.getCardNumber(), user.getEmail());
 
 		registeredUserService.createUser(user);
