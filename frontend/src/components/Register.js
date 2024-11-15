@@ -82,6 +82,10 @@ const Register = () => {
       const response = await callApi(payload);
       if (response) {
         console.log('User registered successfully:', response);
+
+        localStorage.setItem('userID', response.id);
+
+        router.push('/'); // Redirect to home page
       }
     } else {
       setErrors(currentErrors);
