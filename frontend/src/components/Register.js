@@ -1,21 +1,24 @@
 "use client"
 import React, { useState } from 'react';
 import useApi from '../hooks/useApi';
+import { useRouter } from 'next/router';
 
 const Register = () => {
-  const { callApi, loading, error } = useApi('http://localhost:8080/api/users/register', 'POST');
+  const { callApi, loading, error } = useApi('http://localhost:8080/api/payment/account', 'POST');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     address: '',
-    card_number: '',
+    cardNumber: '',
     expiry_month: '',
     expiry_year: '',
+    expiryDate: '',
     cvc: ''
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
+  const router = useRouter();
 
   const validateField = (name, value) => {
     // Skip validation if the field is empty
@@ -30,7 +33,7 @@ const Register = () => {
         return value.length >= 6 ? '' : 'Password must be at least 6 characters.';
       case 'address':
         return value.length > 5 ? '' : 'Address must be at least 6 characters long.';
-      case 'card_number':
+      case 'cardNumber':
         return /^\d{16}$/.test(value) ? '' : 'Card number must be 16 digits.';
       case 'expiry_month':
         return /^\d{2}$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 12
@@ -66,12 +69,17 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
-    ['card_number', 'expiry_month', 'expiry_year', 'cvc'].forEach(field => {
+    ['cardNumber', 'expiry_month', 'expiry_year', 'cvc'].forEach(field => {
       const error = validateField(field, formData[field]);
       if (error) currentErrors[field] = error;
     });
     if (Object.keys(currentErrors).length === 0) {
-      const response = await callApi(formData);
+      const payload = {
+        ...formData,
+        expiryDate: formData.expiry_month + formData.expiry_year,
+      };
+      
+      const response = await callApi(payload);
       if (response) {
         console.log('User registered successfully:', response);
       }
@@ -153,14 +161,14 @@ const Register = () => {
 
             <input
               type="text"
-              name="card_number"
+              name="cardNumber"
               placeholder="Card Number"
-              value={formData.card_number}
+              value={formData.cardNumber}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded text-black"
               required
             />
-            {errors.card_number && <p className="text-red-500 text-sm">{errors.card_number}</p>}
+            {errors.cardNumber && <p className="text-red-500 text-sm">{errors.cardNumber}</p>}
 
             <div className="flex space-x-2">
               <input
