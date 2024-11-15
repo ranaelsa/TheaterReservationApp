@@ -1,10 +1,9 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import useApi from '../hooks/useApi';
-import { useRouter } from 'next/router';
 
 const Register = () => {
-  const { callApi, loading, error } = useApi('http://localhost:8080/api/payment/account', 'POST');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,10 +17,10 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
+  const { callApi, loading, error } = useApi('http://localhost:8080/api/payment/account', 'POST');
   const router = useRouter();
 
   const validateField = (name, value) => {
-    // Skip validation if the field is empty
     if (!value) return '';
   
     switch (name) {
@@ -78,14 +77,21 @@ const Register = () => {
         ...formData,
         expiryDate: formData.expiry_month + formData.expiry_year,
       };
-      
-      const response = await callApi(payload);
-      if (response) {
-        console.log('User registered successfully:', response);
 
-        localStorage.setItem('userID', response.id);
+      try {
+        const response = await callApi(payload);
+        if (response) {
+          console.log('User registered successfully:', response);
 
-        router.push('/'); // Redirect to home page
+          // Save the user ID in local storage
+          localStorage.setItem('userID', response.id);
+
+          // Redirect to the home page
+          router.push('/');
+        }
+      } catch (apiError) {
+        console.error('API Error:', apiError);
+        // Error message handling is done in the hook itself
       }
     } else {
       setErrors(currentErrors);
@@ -95,6 +101,12 @@ const Register = () => {
   return (
     <div className="flex flex-col items-center mt-16 px-4 sm:px-8">
       <h1 className="text-2xl font-bold mb-8">Become a Registered User Today!</h1>
+
+      {/* Display error message here */}
+      {error && (
+        <p className="text-red-600 text-sm mt-2 mb-2 font-bold rounded">{error}</p> // Changed the color slightly and added margin-top
+      )}
+
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
         
         {step === 1 && (
@@ -211,7 +223,6 @@ const Register = () => {
             />
             {errors.cvc && <p className="text-red-500 text-sm">{errors.cvc}</p>}
 
-            <p className="text-sm text-white">By registering, you agree to pay a $20 non-refundable fee per year.</p>
             <button
               type="submit"
               className="w-full p-2 bg-[#854d0e] hover:bg-[#a16207] text-white font-bold rounded"
