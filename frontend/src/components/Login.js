@@ -29,7 +29,7 @@ const Login = () => {
     setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
     ['email', 'password'].forEach(field => {
@@ -38,18 +38,20 @@ const Login = () => {
     });
     setErrors(currentErrors);
 
+    // If there are no validation errors, proceed with the API call
     if (Object.keys(currentErrors).length === 0) {
       try {
-        const response = callApi(formData);
-        console.log(response);
-        localStorage.setItem('userID', response.id);
-        router.push('/');
+        const response = await callApi(formData); // Wait for API response
+        if (response) {
+          console.log('Login successful:', response);
+          localStorage.setItem('userID', response.id); // Store user ID
+          router.push('/'); // Redirect to homepage on successful login
+        } 
       } catch (err) {
-        console.error(err);
+        console.error('Error during login:', err);
+        setErrors({ api: 'Login failed. Please try again.' }); // Handle API error
       }
-    } else {
-      setErrors(currentErrors);
-  };
+    }
 };
 
   return (
