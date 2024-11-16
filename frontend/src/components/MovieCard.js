@@ -13,7 +13,7 @@ const MovieCard = ({ movie }) => { // Default theaters to an empty array
   return (
     <div className="max-w-[250px] border p-3 rounded-lg shadow-lg bg-white">
       <Image
-        src={movie.imageURL}
+        src={`/images/${movie.imageFileName}`}
         alt={`${movie.title} poster`}
         width={250}
         height={300}
