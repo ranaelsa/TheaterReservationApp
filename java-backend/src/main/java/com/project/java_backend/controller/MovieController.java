@@ -36,6 +36,13 @@ public class MovieController {
 		return ResponseEntity.ok(publicMovies);
 	}
 
+	// Get non-public movies
+	@GetMapping(value="/nonpublic", consumes="application/json", produces="application/json")
+	public ResponseEntity<List<Movie>>getAllNonPublicMovies() {
+		List<Movie> privateMovies = movieService.getNonPublicMovies();
+		return ResponseEntity.ok(privateMovies);
+	}
+
 	// Get movie by id
 	@GetMapping(value="/{id}", consumes="application/json", produces="application/json")
 	public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {

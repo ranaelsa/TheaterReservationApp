@@ -61,7 +61,11 @@ public class MovieService {
 
     // Retrieve all public movies (for ordinary users)
     public List<Movie> getPublicMovies() {
-        return movieRepository.findByIsPublic(true);
+        return movieRepository.findByIsPublicTrue();
+    }
+
+    public List<Movie> getNonPublicMovies() {
+        return movieRepository.findByIsPublicFalse();
     }
 
     // Get all movies (for registered users)
