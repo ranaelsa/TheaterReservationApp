@@ -5,6 +5,8 @@ import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "showtimes",
@@ -19,8 +21,6 @@ public class Showtime {
     @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
 
-    private Double price;
-
     // Relationships
     @ManyToOne(optional = false)
     @JoinColumn(name = "theater_id", nullable = false)
@@ -33,9 +33,13 @@ public class Showtime {
     private Movie movie;
 
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("showtime-seatAvailabilities")
+    @JsonIgnore
     private Set<SeatAvailability> seatAvailabilities;
 
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("showtime-tickets")
+    @JsonIgnore
     private Set<Ticket> tickets;
 
     // Constructors
@@ -61,15 +65,6 @@ public class Showtime {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-    }
-
-    // Price
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
     }
 
     // Theater

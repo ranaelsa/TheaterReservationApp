@@ -2,6 +2,10 @@ package com.project.java_backend.model;
 
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.Set;
 
 @Entity
@@ -38,6 +42,8 @@ public class RegisteredUser {
 
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("user-tickets")
+    @JsonIgnore
     private Set<Ticket> tickets;
 
     //Default constructor

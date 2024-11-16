@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "seats", uniqueConstraints = @UniqueConstraint(columnNames = {"theater_id", "seat_number"}))
@@ -27,9 +29,13 @@ public class Seat {
     private Theater theater;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("seat-SAs")
+    @JsonIgnore
     private Set<SeatAvailability> seatAvailabilities;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("ticket-seat")
+    @JsonIgnore
     private Set<Ticket> tickets;
 
     // Constructors

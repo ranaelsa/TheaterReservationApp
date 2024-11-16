@@ -3,6 +3,8 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -36,6 +38,7 @@ public class Movie {
     // Relationships
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("movie-showtimes")
+    @JsonIgnore
     private List<Showtime> showtimes;
 
     // Constructors
