@@ -34,7 +34,7 @@ public class Ticket {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "showtime_id", nullable = false)
-    @JsonBackReference("ticket-showtime")
+    @JsonBackReference("showtime-tickets")
     private Showtime showtime;
 
     @ManyToOne(optional = false)

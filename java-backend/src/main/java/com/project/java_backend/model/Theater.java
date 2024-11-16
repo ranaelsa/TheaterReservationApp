@@ -3,6 +3,8 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -25,10 +27,12 @@ public class Theater {
     // Relationships
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("theater-seats")
+    @JsonIgnore
     private List<Seat> seats;
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("theater-showtimes")
+    @JsonIgnore
     private List<Showtime> showtimes;
 
     // Constructors

@@ -2,6 +2,9 @@ package com.project.java_backend.model;
 
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.io.Serializable;
 
 @Entity
@@ -18,11 +21,13 @@ public class SeatAvailability implements Serializable {
     @ManyToOne(optional = false)
     @MapsId("seatId")
     @JoinColumn(name = "seat_id", nullable = false)
+    @JsonBackReference("seat-SAs")
     private Seat seat;
 
     @ManyToOne(optional = false)
     @MapsId("showtimeId")
     @JoinColumn(name = "showtime_id", nullable = false)
+    @JsonBackReference("showtime-seatAvailabilities")
     private Showtime showtime;
 
     // Fields
