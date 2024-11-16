@@ -10,25 +10,17 @@ import FeaturedSection from '@/components/FeaturedSection';
 import { ShowtimeProvider } from '@/context/ShowtimeContext'; // Ensure you import the provider
 import ShowtimeWindow from '@/components/ShowtimeWindow';
 import './globals.css';
-
-// Mock data for movies
-const mockMovies = [
-  { id: 1, title: "Movie 1", showtimes: ["12:00 PM", "3:00 PM", "6:00 PM"], imageURL: "https://images.unsplash.com/photo-1489633908075-1c914e8ee5ea?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3VyZmVyfGVufDB8fDB8fHww" },
-  { id: 2, title: "Movie 2", showtimes: ["1:00 PM", "4:00 PM", "7:00 PM"], imageURL: "https://images.unsplash.com/photo-1541615060331-ca684e62c5d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D" },
-  { id: 3, title: "Movie 3", showtimes: ["2:00 PM", "5:00 PM", "8:00 PM"], imageURL: "https://images.unsplash.com/photo-1478479474071-8a3014d422c8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8c3RhciUyMHdhcnN8ZW58MHx8MHx8fDA%3D" },
-  { id: 4, title: "Movie 4", showtimes: ["3:00 PM", "6:00 PM", "9:00 PM"], imageURL: "https://images.unsplash.com/photo-1730477069666-b1f238e4a5e0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyMHx8fGVufDB8fHx8fA%3D%3D" },
-  { id: 5, title: "Movie 5", showtimes: ["4:00 PM", "7:00 PM", "10:00 PM"], imageURL: "https://images.unsplash.com/photo-1529335764857-3f1164d1cb24?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njd8fGNhcnRvb258ZW58MHx8MHx8fDA%3D" },
-  // Add more movies here
-];
+import useApi from '@/hooks/useApi';
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTheater, setSelectedTheater] = useState('');
   const [isClient, setIsClient] = useState(false);
 
-  const movies = mockMovies;
+  const { callApi, data: movies, loading, error } = useApi('http://localhost:8080/api/movies/public');
 
-  const filteredMovies = movies.filter((movie) =>
+  // Use an empty array if movies is null or undefined
+  const filteredMovies = (movies || []).filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -36,7 +28,15 @@ const HomePage = () => {
     setIsClient(true); // This will only execute on the client
   }, []);
 
+  useEffect(() => {
+    if (!movies) {
+      callApi();
+    }
+  }, [callApi, movies]);
+
   if (!isClient) return null; // Avoid rendering on the server
+  if (loading) return <div>Loading...</div>; // Show loading message while fetching data
+  if (error) return <div>Error loading movies: {error}</div>; // Show error message if something goes wrong
 
   return (
     <ShowtimeProvider> {/* Wrap the entire content in ShowtimeProvider */}
