@@ -33,10 +33,10 @@ public class TicketController {
     //     return ticketService.createTicket(price, email, user, showtime, seat);
     // }
 
-    // Cancel a ticket by ID
-    @DeleteMapping(value = "/cancel/{id}", consumes = "application/json", produces = "application/json")
-    public String cancelTicket(@PathVariable Long id) {
-        ticketService.cancelTicket(id);
+    // Cancel a ticket by UUID
+    @DeleteMapping(value = "/cancel/{code}", consumes = "application/json", produces = "application/json")
+    public String cancelTicket(@PathVariable String code) {
+        ticketService.cancelTicket(code);
         return "Ticket canceled successfully.";
     }
 

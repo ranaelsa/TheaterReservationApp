@@ -3,6 +3,8 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -24,6 +26,10 @@ public class Ticket {
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
     private String email; // Email of the purchaser
+
+    @NotBlank(message = "Code is required.")
+    @Column(unique = true)
+    private String code; // Code to show the user
 
     // Relationships
     // Optional relationship to RegisteredUser
@@ -54,6 +60,7 @@ public class Ticket {
         this.showtime = showtime;
         this.seat = seat;
         this.purchaseTime = LocalDateTime.now();
+        this.code = generateCode();
     }
 
     public Ticket(Double price, String email, Showtime showtime, Seat seat) {
@@ -62,8 +69,15 @@ public class Ticket {
         this.showtime = showtime;
         this.seat = seat;
         this.purchaseTime = LocalDateTime.now();
+        this.code = generateCode();
     }
     
+
+    private String generateCode() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase(); // Unique 8-character code
+    }
+
+
     // ID
     public Long getId() {
         return id;
@@ -120,6 +134,15 @@ public class Ticket {
 
     public void setSeat(Seat seat) {
         this.seat = seat;
+    }
+
+    // Code
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

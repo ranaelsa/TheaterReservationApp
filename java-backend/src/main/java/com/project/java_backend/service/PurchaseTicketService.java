@@ -76,7 +76,7 @@ public class PurchaseTicketService extends PaymentService{
         for (int i = 0; i < tickets.size(); i++) {
             emailbody = emailbody.concat(
                 "Ticket " + i + "\n" +
-                "\tTicket ID: " + tickets.get(i).getId().toString() + "\n" +
+                "\tTicket Code: " + tickets.get(i).getCode() + "\n" +
                 "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n"
             );
         } 

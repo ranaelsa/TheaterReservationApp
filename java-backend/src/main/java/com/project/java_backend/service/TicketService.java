@@ -32,9 +32,9 @@ public class TicketService {
     }
 
     // Cancel ticket and issue a coupon
-    public void cancelTicket(Long id) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id " + id));
+    public void cancelTicket(String  code) {
+        Ticket ticket = ticketRepository.findByCode(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with code " + code));
 
         validateCancellationTime(ticket);
 
@@ -49,7 +49,7 @@ public class TicketService {
         emailService.sendSimpleEmail(ticket.getEmail(), "Ticket Cancellation", buildCancellationEmail(ticket, coupon));
 
         // Delete ticket
-        ticketRepository.deleteById(id);
+        ticketRepository.deleteByCode(code);
     }
 
     private void validateCancellationTime(Ticket ticket) {
@@ -65,7 +65,7 @@ public class TicketService {
 
     private String buildCancellationEmail(Ticket ticket, Coupon coupon) {
         return "Your ticket has been successfully canceled.\n\n" +
-                "Ticket ID: " + ticket.getId() + "\n" +
+                "Ticket Code: " + ticket.getCode() + "\n" +
                 "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
                 "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
                 "Refund Amount: $" + String.format("%.2f", coupon.getAmount()) + "\n\n" +
