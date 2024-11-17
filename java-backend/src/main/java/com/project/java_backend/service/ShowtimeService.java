@@ -11,6 +11,7 @@ import com.project.java_backend.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,6 +63,17 @@ public class ShowtimeService {
         return showtimeRepository.findByMovieId(movieId);
     }
 
+    // Get showtimes by both movie and theater ID
+    public List<Showtime> getShowtimesByMovieAndTheater(Long movieId, Long theaterId) {
+        List<Showtime> movieShowtimes = showtimeRepository.findByMovieId(movieId);
+        List<Showtime> showtimes = new ArrayList<Showtime>();
+        for (int i = 0; i < movieShowtimes.size(); i++) {
+            if (movieShowtimes.get(i).getTheater().getId() == theaterId) {
+                showtimes.add(movieShowtimes.get(i));
+            }
+        }
+        return showtimes;
+    }
     // Update showtime
     public Showtime updateShowtime(Long id, Showtime updatedShowtime) {
         Showtime existingShowtime = getShowtimeById(id);

@@ -14,4 +14,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     // Find tickets for a specific user (registered users only)
     List<Ticket> findByUserId(Long userId);
+
+    // Find ticket by its UUID code
+    Optional<Ticket> findByCode(String code);
+
+    // Delete ticket by its UUID code
+    void deleteByCode(String code);
 }

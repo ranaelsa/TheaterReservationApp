@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.project.java_backend.model.RegisteredUser;
 
+// Container for sending ticket order info via JSON
 public class TicketOrderContainer {
 	private RegisteredUser registeredUser;
 	private String email;

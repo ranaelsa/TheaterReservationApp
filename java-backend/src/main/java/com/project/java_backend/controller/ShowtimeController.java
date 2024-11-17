@@ -45,6 +45,12 @@ public class ShowtimeController {
         return ResponseEntity.ok(showtimes);
     }
 
+    @GetMapping(value = "/movieandtheater/{movieId}/{theaterId}", produces = "application/json")
+    public ResponseEntity<List<Showtime>> getShowtimesByMovieAndTheater(@PathVariable Long movieId, @PathVariable Long theaterId) {
+        List<Showtime> showtimes = showtimeService.getShowtimesByMovieAndTheater(movieId, theaterId);
+        return ResponseEntity.ok(showtimes);
+    }
+
     // Update an existing showtime
     @PutMapping(value = "/update/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Showtime> updateShowtime(@PathVariable Long id,
