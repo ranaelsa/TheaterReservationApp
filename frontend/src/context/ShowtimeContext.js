@@ -1,61 +1,68 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 
-// Create context
 const ShowtimeContext = createContext();
 
-// Provider component
 export const ShowtimeProvider = ({ children }) => {
   // State for storing theaters
-  const [theaters] = useState([
-    { id: 1, name: "Theater 1" },
-    { id: 2, name: "Theater 2" },
-    { id: 3, name: "Theater 3" },
-    // Add more theaters as needed
-  ]);
+  const [theaters, setTheaters] = useState([]); // Default to an empty array
+  const { callApi, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
 
-  // State for storing selected theater, initially from localStorage or default
+  useEffect(() => {
+    // Fetch theaters when the component mounts
+    const fetchTheaters = async () => {
+      try {
+        const theatersData = await callApi(); // Fetch theaters
+        setTheaters(theatersData); // Update state with fetched theaters
+      } catch (err) {
+        console.error("Error fetching theaters:", err);
+      }
+    };
+
+    fetchTheaters();
+  }, [callApi]);
+
+  // State for selected theater and other states
   const [selectedTheater, setSelectedTheater] = useState(() => {
     const savedTheater = localStorage.getItem('selectedTheater');
-    return savedTheater ? savedTheater : ''; // Use saved value or default to an empty string
+    return savedTheater ? savedTheater : ''; 
   });
 
-  // Update selected theater and persist it to localStorage
   const onSelectTheater = (theater) => {
     setSelectedTheater(theater);
-    localStorage.setItem('selectedTheater', theater); // Save to localStorage
+    localStorage.setItem('selectedTheater', theater);
   };
-  
-  // State for show window visibility
+
+  // State for show window visibility and other showtime logic
   const [showWindow, setShowWindow] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
-  // Function to open the showtime window
   const openShowWindow = (movie) => {
-    setSelectedMovie(movie); // Set the selected movie
-    setShowWindow(true); // Open the window
+    setSelectedMovie(movie);
+    setShowWindow(true);
   };
 
-  // Function to close the showtime window
   const closeShowWindow = () => {
-    setShowWindow(false); // Close the window
-    setSelectedMovie(null); // Reset the selected movie
+    setShowWindow(false);
+    setSelectedMovie(null);
   };
 
   return (
-        <ShowtimeContext.Provider value={{
-          theaters,
-          selectedTheater,
-          onSelectTheater,
-          setSelectedTheater,
-          openShowWindow,
-          closeShowWindow,
-          showWindow,
-          selectedMovie
-        }}>
-          {children}
-        </ShowtimeContext.Provider>
-      );
+    <ShowtimeContext.Provider value={{
+      theaters,
+      selectedTheater,
+      onSelectTheater,
+      setSelectedTheater,
+      openShowWindow,
+      closeShowWindow,
+      showWindow,
+      selectedMovie,
+      loading, // You can also expose loading state here if needed
+      error, // Error handling if you want to show an error in the UI
+    }}>
+      {children}
+    </ShowtimeContext.Provider>
+  );
 };
 
-// Custom hook to use the ShowtimeContext
 export const useShowtime = () => useContext(ShowtimeContext);
