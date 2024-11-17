@@ -1,21 +1,20 @@
 "use client"
 import React, { useState } from 'react';
+import useApi from '@/hooks/useApi';
 
 const CancelTicket = () => {
   const [formData, setFormData] = useState({
-    email: '',
     ticketID: '',
   });
   const [errors, setErrors] = useState({});
+  const { callApi, data, loading, error } = useApi(`http://localhost:8080/api/tickets/cancel/${formData.ticketID}`, 'DELETE');
 
   const validateField = (name, value) => {
     // Skip validation if the field is empty
     if (!value) return '';
     switch (name) {
-      case 'email':
-        return /\S+@\S+\.\S+/.test(value) ? '' : 'Invalid email format.';
       case 'ticketID':
-        return value.length === 10 ? '' : 'Ticket ID must be 10 characters long.';
+        return value.length === 7 ? '' : 'Ticket ID must be 7 characters long.';
       default:
         return '';
     }
@@ -27,30 +26,25 @@ const CancelTicket = () => {
     setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
-    ['email', 'ticketID'].forEach(field => {
+    ["ticketID"].forEach((field) => {
       const error = validateField(field, formData[field]);
       if (error) currentErrors[field] = error;
     });
-    setErrors(currentErrors); // Set the accumulated errors
+    setErrors(currentErrors);
+
+    if (Object.keys(currentErrors).length === 0) {
+      // No validation errors, proceed with API call
+      await callApi();
+    }
   };
 
   return (
     <div className="flex flex-col items-center mt-16 px-4 sm:px-8">
       <h1 className="text-2xl font-bold mb-8">Cancel a Ticket</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded text-black"
-          required
-        />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         <input
           type="text" // Corrected this line
           name="ticketID"
@@ -69,9 +63,16 @@ const CancelTicket = () => {
         <button
           type="submit"
           className="w-full p-2 bg-[#991b1b] hover:bg-[#ef4444] text-white font-bold rounded"
+          disabled={loading}
         >
-          Cancel Ticket
+          {loading ? 'Cancelling...' : 'Cancel Ticket'}
         </button>
+        {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+        {data && (
+          <p className="text-green-500 text-sm mt-4">
+            {data.message}
+          </p>
+        )}
       </form>
     </div>
   );
