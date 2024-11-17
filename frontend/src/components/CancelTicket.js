@@ -14,7 +14,7 @@ const CancelTicket = () => {
     if (!value) return '';
     switch (name) {
       case 'ticketID':
-        return value.length === 7 ? '' : 'Ticket ID must be 7 characters long.';
+        return value.length === 8 ? '' : 'Ticket ID must be 8 characters long.';
       default:
         return '';
     }
