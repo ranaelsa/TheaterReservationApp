@@ -1,6 +1,7 @@
-import { useShowtime } from "../context/ShowtimeContext"; // Import the custom hook for context
-import { useState } from "react";
+import { useShowtime } from "../context/ShowtimeContext";
+import { useState, useEffect } from "react";
 import SeatSelectionModal from "./SeatSelectionModal";
+import useApi from "../hooks/useApi";
 
 const ShowtimeWindow = () => {
   const {
@@ -10,24 +11,73 @@ const ShowtimeWindow = () => {
     selectedTheater,
     theaters,
     onSelectTheater,
-  } = useShowtime(); // Access 'theaters' from context
-  const [showSeatSelection, setShowSeatSelection] = useState(false); // State to control the seat selection modal
-  const [selectedShowtime, setSelectedShowtime] = useState(null); // State for the selected showtime
+  } = useShowtime();
 
-  // Early return if the window should not be shown
-  if (!showWindow || !selectedMovie) return null;
+  const [showSeatSelection, setShowSeatSelection] = useState(false);
+  const [selectedShowtime, setSelectedShowtime] = useState(null);
+  const [currentShowtimes, setCurrentShowtimes] = useState([]);
+  
+  const { callApi, data: showtimes, loading, error } = useApi(
+    `http://localhost:8080/api/showtimes/movieandtheater/${selectedMovie?.id}/${selectedTheater?.id}`
+  );
 
-  // Handle theater selection in the dropdown
+  useEffect(() => {
+    const fetchShowtimes = async () => {
+      if (selectedMovie?.id && selectedTheater?.id) {
+        try {
+          console.log("Fetching showtimes for:", selectedMovie.id, selectedTheater.id);
+          await callApi();  // Make sure to await the API call
+        } catch (error) {
+          console.error("Failed to fetch showtimes", error);
+        }
+      }
+    };
+
+    if (selectedMovie?.id && selectedTheater?.id) {
+      fetchShowtimes();
+    }
+
+    // Cleanup function to avoid state updates after unmount
+    return () => {
+      setCurrentShowtimes([]); // Optionally clear the showtimes when the component unmounts or when dependencies change
+    };
+  }, [selectedMovie?.id, selectedTheater?.id]); // Only depend on selectedMovie and selectedTheater
+
+  // Only set the showtimes once the fetched data is available
+  useEffect(() => {
+    if (showtimes && showtimes !== currentShowtimes) {
+      console.log("Fetched showtimes:", showtimes);
+      setCurrentShowtimes(showtimes);
+    }
+  }, [showtimes]);  // Only run when showtimes changes
+
   const handleTheaterChange = (e) => {
-    const selected = e.target.value;
-    onSelectTheater(selected); // Use onSelectTheater to update the selected theater
+    const selectedName = e.target.value;
+    const selected = theaters.find((theater) => theater.name === selectedName);
+    if (selected) {
+      onSelectTheater(selected);
+      console.log("Selected theater:", selected);
+    }
   };
 
-  // Handle showtime click to open seat selection modal
-  const handleShowtimeClick = (time) => {
-    setSelectedShowtime(time);
-    setShowSeatSelection(true); // Show the seat selection modal
+  const handleShowtimeClick = (showtime) => {
+    setSelectedShowtime(showtime);
+    setShowSeatSelection(true);
   };
+
+  const formatShowtime = (datetime) => {
+    const date = new Date(datetime);
+    return date.toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  if (!showWindow || !selectedMovie) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -48,11 +98,10 @@ const ShowtimeWindow = () => {
             Select Theater:
           </label>
           <select
-            value={selectedTheater || ""}
-            onChange={handleTheaterChange} // Use the handleTheaterChange function to update selected theater
+            value={selectedTheater?.name || ""}
+            onChange={handleTheaterChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700"
           >
-            {/* Use the theaters from context */}
             {theaters.map((theater) => (
               <option key={theater.id} value={theater.name}>
                 {theater.name}
@@ -65,27 +114,30 @@ const ShowtimeWindow = () => {
           <h3 className="text-xl font-bold mb-4 text-black">
             Available Showtimes:
           </h3>
-          {/* Replace this with real showtimes */}
-          <ul>
-            {["10:00 AM", "1:00 PM", "5:30 PM", "8:45 PM"].map(
-              (time, index) => (
-                <li key={index} className="text-lg mb-2">
+          {loading && <p>Loading showtimes...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+          {!loading && !error && currentShowtimes.length > 0 ? (
+            <ul>
+              {currentShowtimes.map((showtime) => (
+                <li key={showtime.id} className="text-lg mb-2">
                   <button
-                    onClick={() => handleShowtimeClick(time)}
+                    onClick={() => handleShowtimeClick(showtime)}
                     className="text-blue-500 underline"
                   >
-                    {time}
+                    {formatShowtime(showtime.startTime)}
                   </button>
                 </li>
-              )
-            )}
-          </ul>
+              ))}
+            </ul>
+          ) : (
+            !loading && <p className="text-black">No showtimes available.</p>
+          )}
         </div>
-        {/* Seat Selection Modal */}
+
         {showSeatSelection && (
           <SeatSelectionModal
             showtime={selectedShowtime}
-            onClose={() => setShowSeatSelection(false)} // Close the seat selection modal
+            onClose={() => setShowSeatSelection(false)}
           />
         )}
       </div>
