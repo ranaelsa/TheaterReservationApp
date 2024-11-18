@@ -36,7 +36,7 @@ public class PaymentController {
 	@PostMapping(value="/tickets", consumes="application/json", produces="application/json")
 	public ResponseEntity<List<Ticket>> purchaseTickets(@RequestBody TicketOrderContainer orderInfo) {
 		List<Ticket> createdTickets = purchaseTicketService.purchaseTickets(orderInfo.getEmail(), 
-																			orderInfo.getRegisteredUser(), 
+																			orderInfo.getRegisteredUserId(), 
 																			orderInfo.getShowtimeId(), 
 																			orderInfo.getSeatIds(), 
 																			orderInfo.getCardNumber());

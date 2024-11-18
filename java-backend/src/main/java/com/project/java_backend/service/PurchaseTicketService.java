@@ -23,8 +23,11 @@ public class PurchaseTicketService extends PaymentService{
     @Autowired
     private ShowtimeService showtimeService;
 
+    @Autowired
+    private RegisteredUserService registeredUserService;
+
     // Purchase 1 or more tickets for a single showtime
-    public List<Ticket> purchaseTickets(String email, RegisteredUser user, Long showtimeId, List<Long> seatIds, String cardNumber) {
+    public List<Ticket> purchaseTickets(String email, Long registeredUserId, Long showtimeId, List<Long> seatIds, String cardNumber) {
 
         // Calculate the total cost of tickets
         Double price = 0.0;
@@ -52,7 +55,7 @@ public class PurchaseTicketService extends PaymentService{
             seatAvailabilityService.reserveSeat(seatIds.get(i), showtimeId);
             tickets.add(ticketService.createTicket(seatService.getSeatById(seatIds.get(i)).getPrice(), 
                                                     email, 
-                                                    user, 
+                                                    registeredUserService.getUserById(registeredUserId),
                                                     showtimeService.getShowtimeById(showtimeId), 
                                                     seatService.getSeatById(seatIds.get(i))));
         }
