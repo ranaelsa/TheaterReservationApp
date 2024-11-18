@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useShowtime } from "../context/ShowtimeContext"; // Import the custom hook
 
 const SeatSelectionModal = ({ showtime, onClose }) => {
   const router = useRouter();
+  const { selectedSeats, addSeat, removeSeat, clearSeats } = useShowtime(); // Get context values for seat management
 
   const formatShowtime = (datetime) => {
     const date = new Date(datetime);
-    return date.toLocaleString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+    return date.toLocaleString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
-  // Define the seat layout with row and seat labels
   const initialSeats = {
     A: [
       "unavailable",
@@ -99,6 +100,7 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
   };
 
   const [seats, setSeats] = useState(initialSeats);
+  const [localSelectedSeats, setLocalSelectedSeats] = useState(selectedSeats); // Add local state for selected seats
 
   // Toggle seat selection
   const handleSeatClick = (row, seatIndex) => {
@@ -106,16 +108,37 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
       ...prevSeats,
       [row]: prevSeats[row].map((seat, index) => {
         if (index === seatIndex) {
-          if (seat === "available") return "selected"; // Select if available
-          if (seat === "selected") return "available"; // Deselect if selected
+          if (seat === "available") {
+            setLocalSelectedSeats((prevSeats) => [
+              ...prevSeats,
+              `${row}${seatIndex + 1}`,
+            ]); // Add to local selected seats
+            return "selected"; // Select if available
+          }
+          if (seat === "selected") {
+            setLocalSelectedSeats((prevSeats) =>
+              prevSeats.filter((id) => id !== `${row}${seatIndex + 1}`)
+            ); // Remove from local selected seats
+            return "available"; // Deselect if selected
+          }
         }
         return seat; // Leave unchanged if unavailable
       }),
     }));
   };
+
   const handleProceed = () => {
+    // After selection, sync with the context
+    localSelectedSeats.forEach((seatId) => addSeat(seatId)); // Add all selected seats to context
     router.push("/pay");
   };
+
+  useEffect(() => {
+    // Clear selected seats when the modal closes
+    if (!showtime) {
+      clearSeats();
+    }
+  }, [showtime, clearSeats]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
