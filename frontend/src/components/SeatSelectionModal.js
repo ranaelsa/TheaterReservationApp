@@ -28,26 +28,47 @@ const SeatSelectionModal = ({ onClose }) => {
 
   const transformSeatData = (seatData) => {
     const seatMap = {};
-    seatData.forEach(({ id, isAvailable }) => {
-      const row = String.fromCharCode(58 + Math.floor((id.seatId - 1) / 11) + 1); // Convert seatId to row
-      const col = (id.seatId - 1) % 11; // Determine column
-      if (!seatMap[row]) seatMap[row] = Array(10).fill("unavailable");
-      seatMap[row][col] = isAvailable ? "available" : "unavailable";
+  
+    // Sort seatData by seatId to ensure proper ordering
+    const sortedSeats = seatData.sort((a, b) => a.id.seatId - b.id.seatId);
+  
+    // Dynamically calculate row and column for each seat
+    sortedSeats.forEach(({ id: { seatId }, isAvailable }) => {
+      const totalSeatsPerRow = 11; // Fixed number of seats per row
+      const totalRows = 6; // Fixed number of rows (A to F)
+  
+      // Calculate the row index (0 to 5) and column (0 to 10)
+      const rowIndex = Math.floor((seatId - 1) / totalSeatsPerRow) % totalRows;
+      const row = String.fromCharCode(65 + rowIndex); // Convert rowIndex to letter (A-F)
+      const col = (seatId - 1) % totalSeatsPerRow; // Determine column
+  
+      if (!seatMap[row]) seatMap[row] = Array(totalSeatsPerRow).fill(null); // Initialize row if not present
+  
+      // Assign seat details
+      seatMap[row][col] = {
+        status: isAvailable ? "available" : "unavailable",
+        seatId, // Store original seatId
+      };
     });
+  
     return seatMap;
   };
+  
+  
+  
 
   const handleSeatClick = (row, seatIndex) => {
+    const seatInfo = seats[row][seatIndex];
+    if (seatInfo.status === "unavailable") return;
+  
     setSeats((prevSeats) => ({
       ...prevSeats,
       [row]: prevSeats[row].map((seat, index) => {
         if (index === seatIndex) {
-          if (seat === "available") {
-            return "selected";
-          }
-          if (seat === "selected") {
-            return "available";
-          }
+          return {
+            ...seat,
+            status: seat.status === "available" ? "selected" : "available",
+          };
         }
         return seat;
       }),
@@ -69,44 +90,41 @@ const SeatSelectionModal = ({ onClose }) => {
   useEffect(() => {
     const updatedSelectedSeats = [];
     Object.keys(seats).forEach((row) => {
-      seats[row].forEach((seat, seatIndex) => {
-        const seatId = `${row}${seatIndex + 1}`;
-        if (seat === "selected") {
-          updatedSelectedSeats.push(seatId);
+      seats[row].forEach((seat) => {
+        if (seat.status === "selected") {
+          updatedSelectedSeats.push(seat.seatId); // Use the stored seatId
         }
       });
     });
-
+  
     selectedSeats.forEach((seatId) => {
       if (!updatedSelectedSeats.includes(seatId)) {
         removeSeat(seatId); // Remove deselected seat from context
       }
     });
-
+  
     updatedSelectedSeats.forEach((seatId) => {
       if (!selectedSeats.includes(seatId)) {
         addSeat(seatId); // Add selected seat to context
       }
     });
   }, [seats, selectedSeats, addSeat, removeSeat]);
+  
 
-  const handleProceed = () => {
-    clearSeats(); // Clear all previously selected seats from the context
+const handleProceed = () => {
+  clearSeats(); // Clear all previously selected seats from the context
 
-    Object.keys(seats).forEach((row) => {
-      seats[row].forEach((seat, seatIndex) => {
-        if (seat === "selected") {
-          const seatId = `${row}${seatIndex + 1}`;
-
-          if (!selectedSeats.includes(seatId)) {
-            addSeat(seatId);
-          }
-        }
-      });
+  Object.keys(seats).forEach((row) => {
+    seats[row].forEach((seat) => {
+      if (seat.status === "selected" && !selectedSeats.includes(seat.seatId)) {
+        addSeat(seat.seatId);
+      }
     });
+  });
 
-    router.push("/pay");
-  };
+  router.push("/pay");
+};
+
 
   useEffect(() => {
     if (!selectedShowtime) {
@@ -157,14 +175,14 @@ const SeatSelectionModal = ({ onClose }) => {
                       <div
                         key={`${row}-${seatIndex}`}
                         className={`w-10 h-10 flex items-center justify-center rounded cursor-pointer text-white ${
-                          seat === "available"
+                          seat.status === "available"
                             ? "bg-green-500"
-                            : seat === "selected"
+                            : seat.status === "selected"
                             ? "bg-blue-500"
                             : "bg-gray-400 cursor-not-allowed"
                         }`}
                         onClick={() =>
-                          seat !== "unavailable" && handleSeatClick(row, seatIndex)
+                          seat.status !== "unavailable" && handleSeatClick(row, seatIndex)
                         }
                       >
                         {row}
