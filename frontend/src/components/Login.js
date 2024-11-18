@@ -1,5 +1,7 @@
 "use client"
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import useApi from '../hooks/useApi';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +9,8 @@ const Login = () => {
     password: '',
   });
   const [errors, setErrors] = useState({});
+  const { callApi, loading, error } = useApi('http://localhost:8080/api/users/login', 'POST');
+  const router = useRouter();
 
   const validateField = (name, value) => {
     // Skip validation if the field is empty
@@ -25,18 +29,37 @@ const Login = () => {
     setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
     ['email', 'password'].forEach(field => {
       const error = validateField(field, formData[field]);
       if (error) currentErrors[field] = error;
     });
-  };
+    setErrors(currentErrors);
+
+    // If there are no validation errors, proceed with the API call
+    if (Object.keys(currentErrors).length === 0) {
+      try {
+        const response = await callApi(formData); // Wait for API response
+        if (response) {
+          console.log('Login successful:', response);
+          localStorage.setItem('userID', response.id); // Store user ID
+          router.push('/'); // Redirect to homepage on successful login
+        } 
+      } catch (err) {
+        console.error('Error during login:', err);
+        setErrors({ api: 'Login failed. Please try again.' }); // Handle API error
+      }
+    }
+};
 
   return (
     <div className="flex flex-col items-center mt-16 px-4 sm:px-8" >
       <h1 className="text-2xl font-bold mb-8">Login to Existing Account</h1>
+      {error && (
+        <p className="text-red-600 text-sm mt-2 mb-2 font-bold rounded">{error}</p> // Changed the color slightly and added margin-top
+      )}
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
             <input
               type="email"
@@ -68,5 +91,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;

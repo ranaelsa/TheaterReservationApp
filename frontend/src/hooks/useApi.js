@@ -22,7 +22,7 @@ const useApi = (endpoint, method = 'GET') => {
             setData(response.data);
             return response.data;
         } catch (err) {
-            setError(err.response?.data?.message || err.message || 'Something went wrong');
+            setError(err.response.data || err.message || 'Something went wrong');
             console.error(err);
         } finally {
             setLoading(false);

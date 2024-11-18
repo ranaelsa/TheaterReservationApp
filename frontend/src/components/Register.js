@@ -1,24 +1,26 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import useApi from '../hooks/useApi';
 
 const Register = () => {
-  const { callApi, loading, error } = useApi('http://localhost:8080/api/users/register', 'POST');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     address: '',
-    card_number: '',
+    cardNumber: '',
     expiry_month: '',
     expiry_year: '',
+    expiryDate: '',
     cvc: ''
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
+  const { callApi, loading, error } = useApi('http://localhost:8080/api/payment/account', 'POST');
+  const router = useRouter();
 
   const validateField = (name, value) => {
-    // Skip validation if the field is empty
     if (!value) return '';
   
     switch (name) {
@@ -30,7 +32,7 @@ const Register = () => {
         return value.length >= 6 ? '' : 'Password must be at least 6 characters.';
       case 'address':
         return value.length > 5 ? '' : 'Address must be at least 6 characters long.';
-      case 'card_number':
+      case 'cardNumber':
         return /^\d{16}$/.test(value) ? '' : 'Card number must be 16 digits.';
       case 'expiry_month':
         return /^\d{2}$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 12
@@ -66,14 +68,30 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const currentErrors = {};
-    ['card_number', 'expiry_month', 'expiry_year', 'cvc'].forEach(field => {
+    ['cardNumber', 'expiry_month', 'expiry_year', 'cvc'].forEach(field => {
       const error = validateField(field, formData[field]);
       if (error) currentErrors[field] = error;
     });
     if (Object.keys(currentErrors).length === 0) {
-      const response = await callApi(formData);
-      if (response) {
-        console.log('User registered successfully:', response);
+      const payload = {
+        ...formData,
+        expiryDate: formData.expiry_month + formData.expiry_year,
+      };
+
+      try {
+        const response = await callApi(payload);
+        if (response) {
+          console.log('User registered successfully:', response);
+
+          // Save the user ID in local storage
+          localStorage.setItem('userID', response.id);
+
+          // Redirect to the home page
+          router.push('/');
+        }
+      } catch (apiError) {
+        console.error('API Error:', apiError);
+        // Error message handling is done in the hook itself
       }
     } else {
       setErrors(currentErrors);
@@ -83,6 +101,12 @@ const Register = () => {
   return (
     <div className="flex flex-col items-center mt-16 px-4 sm:px-8">
       <h1 className="text-2xl font-bold mb-8">Become a Registered User Today!</h1>
+
+      {/* Display error message here */}
+      {error && (
+        <p className="text-red-600 text-sm mt-2 mb-2 font-bold rounded">{error}</p> // Changed the color slightly and added margin-top
+      )}
+
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
         
         {step === 1 && (
@@ -153,14 +177,14 @@ const Register = () => {
 
             <input
               type="text"
-              name="card_number"
+              name="cardNumber"
               placeholder="Card Number"
-              value={formData.card_number}
+              value={formData.cardNumber}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded text-black"
               required
             />
-            {errors.card_number && <p className="text-red-500 text-sm">{errors.card_number}</p>}
+            {errors.cardNumber && <p className="text-red-500 text-sm">{errors.cardNumber}</p>}
 
             <div className="flex space-x-2">
               <input
@@ -199,7 +223,6 @@ const Register = () => {
             />
             {errors.cvc && <p className="text-red-500 text-sm">{errors.cvc}</p>}
 
-            <p className="text-sm text-white">By registering, you agree to pay a $20 non-refundable fee per year.</p>
             <button
               type="submit"
               className="w-full p-2 bg-[#854d0e] hover:bg-[#a16207] text-white font-bold rounded"

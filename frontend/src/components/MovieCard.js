@@ -3,17 +3,18 @@ import Image from "next/image";
 import { useShowtime } from "@/context/ShowtimeContext";
 
 const MovieCard = ({ movie }) => { // Default theaters to an empty array
-  const { openShowWindow } = useShowtime();
+  const { openShowWindow, onSelectMovie } = useShowtime();
 
   const handleBookNowClick = () => {
     console.log("Book Now clicked for", movie.title);
+    onSelectMovie(movie);
     openShowWindow(movie);
   };
 
   return (
     <div className="max-w-[250px] border p-3 rounded-lg shadow-lg bg-white">
       <Image
-        src={movie.imageURL}
+        src={`/images/${movie.imageFileName}`}
         alt={`${movie.title} poster`}
         width={250}
         height={300}

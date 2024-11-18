@@ -22,8 +22,9 @@ public class RegisteredUserController {
     }
 
     // Get user by ID
-    @GetMapping(value="/{id}", consumes="application/json", produces="application/json")
+    @GetMapping(value="/{id}", produces="application/json")
     public ResponseEntity<RegisteredUser> getUserById(@PathVariable Long id) {
+        System.out.println("Getting user with id: " + id);
         RegisteredUser user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
