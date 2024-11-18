@@ -25,10 +25,22 @@ public class TicketService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SeatService seatService;
+
     // Create a new ticket (used by PurchaseTicketService to finalize purchase)
     public Ticket createTicket(Double price, String email, RegisteredUser user, Showtime showtime, Seat seat) {
         Ticket ticket = new Ticket(price, email, user, showtime, seat);
         return ticketRepository.save(ticket);
+    }
+
+    // Get cost of tickets
+    public Double getCost(List<Long> seatIds) {
+        Double price = 0.0;
+        for (int i = 0; i < seatIds.size(); i++) {
+            price += seatService.getSeatById(seatIds.get(i)).getPrice();
+        }
+        return price;
     }
 
     // Cancel ticket and issue a coupon
