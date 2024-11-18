@@ -43,7 +43,7 @@ public class SeatAvailabilityService {
 
     // Get list of available seats for a showtime
     public List<SeatAvailability> getAvailableSeatsByShowtimeId(Long showtimeId) {
-        return seatAvailabilityRepository.findByShowtimeIdAndIsAvailableTrue(showtimeId);
+        return seatAvailabilityRepository.findByShowtimeId(showtimeId);
     }
 
     // Check if a specific seat is available for a showtime

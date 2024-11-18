@@ -11,6 +11,8 @@ import com.project.java_backend.model.SeatAvailabilityId;
 public interface SeatAvailabilityRepository extends JpaRepository<SeatAvailability, Long> {
     // Get all available seats for a showtime
     List<SeatAvailability> findByShowtimeIdAndIsAvailableTrue(Long showtimeId);
+
+    List<SeatAvailability> findByShowtimeId(Long showtimeId);
     
     // Find a specific seat availability by showtime and seat
     Optional<SeatAvailability> findByIdShowtimeIdAndSeatId(Long seatId, Long showtimeId);
