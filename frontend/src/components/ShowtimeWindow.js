@@ -11,10 +11,11 @@ const ShowtimeWindow = () => {
     selectedTheater,
     theaters,
     onSelectTheater,
+    selectedShowtime,
+    onSelectShowtime,
   } = useShowtime();
 
   const [showSeatSelection, setShowSeatSelection] = useState(false);
-  const [selectedShowtime, setSelectedShowtime] = useState(null);
   const [currentShowtimes, setCurrentShowtimes] = useState([]);
   
   const { callApi, data: showtimes, loading, error } = useApi(
@@ -61,8 +62,9 @@ const ShowtimeWindow = () => {
   };
 
   const handleShowtimeClick = (showtime) => {
-    setSelectedShowtime(showtime);
+    onSelectShowtime(showtime);
     setShowSeatSelection(true);
+    console.log("Selected showtime:", showtime);
   };
 
   const formatShowtime = (datetime) => {
@@ -136,7 +138,6 @@ const ShowtimeWindow = () => {
 
         {showSeatSelection && (
           <SeatSelectionModal
-            showtime={selectedShowtime}
             onClose={() => setShowSeatSelection(false)}
           />
         )}

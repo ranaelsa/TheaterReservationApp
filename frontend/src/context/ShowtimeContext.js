@@ -1,45 +1,88 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import useApi from '../hooks/useApi';
 
 const ShowtimeContext = createContext();
 
 export const ShowtimeProvider = ({ children }) => {
-  // State for storing theaters
-  const [theaters, setTheaters] = useState([]); // Default to an empty array
-  const { callApi, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
+  // State for theaters and selected theater
+  const [theaters, setTheaters] = useState([]);
+  const [selectedTheater, setSelectedTheater] = useState(() => {
+    const savedTheater = localStorage.getItem('selectedTheater');
+    return savedTheater ? JSON.parse(savedTheater) : null;
+  });
 
-  // Fetch theaters when the component mounts (only once)
+  const { callApi: getTheaters, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
+
   useEffect(() => {
     const fetchTheaters = async () => {
       try {
-        const theatersData = await callApi(); // Fetch theaters
-        setTheaters(theatersData); // Update state with fetched theaters
+        const theatersData = await getTheaters(); 
+        setTheaters(theatersData);
       } catch (err) {
         console.error("Error fetching theaters:", err);
       }
     };
-
-    fetchTheaters();
-  }, [callApi]); // Empty dependency array to run this effect only once
-
-  // State for selected theater
-  const [selectedTheater, setSelectedTheater] = useState(() => {
-    const savedTheater = localStorage.getItem('selectedTheater');
-    return savedTheater ? JSON.parse(savedTheater) : null; // Parse JSON if available
-  });
+  
+    fetchTheaters(); 
+  }, []);
 
   const onSelectTheater = (theater) => {
-    // Only update if the new selection is different from the current one
     if (theater !== selectedTheater) {
       setSelectedTheater(theater);
-      localStorage.setItem('selectedTheater', JSON.stringify(theater)); // Store as JSON
+      localStorage.setItem('selectedTheater', JSON.stringify(theater));
     }
   };
 
-  // State for show window visibility and other showtime logic
-  const [showWindow, setShowWindow] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState(null);
+  // State for movies, showtimes, and seats
+  const [selectedMovie, setSelectedMovie] = useState(() => {
+    const savedMovie = localStorage.getItem('selectedMovie');
+    return savedMovie ? JSON.parse(savedMovie) : null;
+  });
 
+  const [selectedShowtime, setSelectedShowtime] = useState(() => {
+    const savedShowtime = localStorage.getItem('selectedShowtime');
+    return savedShowtime ? JSON.parse(savedShowtime) : null;
+  });  
+
+  const [selectedSeats, setSelectedSeats] = useState(() => {
+    const savedSeats = localStorage.getItem('selectedSeats');
+    return savedSeats ? JSON.parse(savedSeats) : [];
+  });
+
+  // Functions to manage showtime selection
+  const onSelectShowtime = (showtime) => {
+    setSelectedShowtime(showtime);
+    localStorage.setItem('selectedShowtime', JSON.stringify(showtime));
+    setSelectedSeats([]); // Clear seat selection when showtime changes
+  };
+
+  // Function to manage movie selection
+  const onSelectMovie = (movie) => {
+    setSelectedMovie(movie);
+    localStorage.setItem('selectedMovie', JSON.stringify(movie));
+  };
+
+  // Functions to manage seat selection
+  const addSeat = (seatId) => {
+    const updatedSeats = [...selectedSeats, seatId];
+    setSelectedSeats(updatedSeats);
+    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
+  };
+
+  const removeSeat = (seatId) => {
+    const updatedSeats = selectedSeats.filter((id) => id !== seatId);
+    
+    setSelectedSeats(updatedSeats);
+    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
+  };
+
+  const clearSeats = () => {
+    setSelectedSeats([]);
+    localStorage.removeItem('selectedSeats');
+  };
+
+  // Manage the show window visibility
+  const [showWindow, setShowWindow] = useState(false);
   const openShowWindow = (movie) => {
     setSelectedMovie(movie);
     setShowWindow(true);
@@ -48,20 +91,32 @@ export const ShowtimeProvider = ({ children }) => {
   const closeShowWindow = () => {
     setShowWindow(false);
     setSelectedMovie(null);
+    setSelectedShowtime(null);
+    setSelectedSeats([]);
   };
 
   return (
-    <ShowtimeContext.Provider value={{
-      theaters,
-      selectedTheater,
-      onSelectTheater,
-      openShowWindow,
-      closeShowWindow,
-      showWindow,
-      selectedMovie,
-      loading, // You can also expose loading state here if needed
-      error, // Error handling if you want to show an error in the UI
-    }}>
+    <ShowtimeContext.Provider
+      value={{
+        theaters,
+        selectedTheater,
+        onSelectTheater,
+        onSelectMovie,
+        selectedMovie,
+        setSelectedMovie,
+        selectedShowtime,
+        onSelectShowtime,
+        selectedSeats,
+        addSeat,
+        removeSeat,
+        clearSeats,
+        showWindow,
+        openShowWindow,
+        closeShowWindow,
+        loading,
+        error,
+      }}
+    >
       {children}
     </ShowtimeContext.Provider>
   );

@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShowtime } from '../context/ShowtimeContext'; // Import custom context for selected options
 import useApi from '../hooks/useApi'; // Ensure this is your custom hook
 
 const PaymentWindow = ({ onCompletePayment }) => {
-  const { selectedMovie, selectedTheater, selectedShowtime, selectedSeat } = useShowtime();
+  const { selectedMovie, selectedTheater, selectedShowtime, selectedSeats } = useShowtime();
+
+  // Log the values from ShowtimeContext
+  useEffect(() => {
+    console.log('Showtime Context:', {
+      selectedMovie,
+      selectedTheater,
+      selectedShowtime,
+      selectedSeats
+    });
+  }, [selectedMovie, selectedTheater, selectedShowtime, selectedSeats]);
 
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiry] = useState('');
@@ -119,7 +129,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
       movie: selectedMovie,
       theater: selectedTheater,
       showtime: selectedShowtime,
-      seat: selectedSeat,
+      seat: selectedSeats,
       amount: finalAmount,
       cardNumber,
       expiryDate,

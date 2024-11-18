@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useShowtime } from "../context/ShowtimeContext"; // Import the custom hook
 
-const SeatSelectionModal = ({ showtime, onClose }) => {
+const SeatSelectionModal = ({ onClose }) => {
   const router = useRouter();
+  const { selectedShowtime, selectedSeats, addSeat, removeSeat, clearSeats } = useShowtime(); // Get context values for seat management
 
   const formatShowtime = (datetime) => {
     const date = new Date(datetime);
-    return date.toLocaleString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+    return date.toLocaleString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
-  // Define the seat layout with row and seat labels
   const initialSeats = {
     A: [
       "unavailable",
@@ -102,20 +103,78 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
 
   // Toggle seat selection
   const handleSeatClick = (row, seatIndex) => {
+    const seatId = `${row}${seatIndex + 1}`;
     setSeats((prevSeats) => ({
       ...prevSeats,
       [row]: prevSeats[row].map((seat, index) => {
         if (index === seatIndex) {
-          if (seat === "available") return "selected"; // Select if available
-          if (seat === "selected") return "available"; // Deselect if selected
+          if (seat === "available") {
+            return "selected";
+          }
+          if (seat === "selected") {
+            return "available";
+          }
         }
-        return seat; // Leave unchanged if unavailable
+        return seat;
       }),
     }));
   };
+
+  useEffect(() => {
+    // After the state updates, sync with context
+    const updatedSelectedSeats = [];
+    Object.keys(seats).forEach((row) => {
+      seats[row].forEach((seat, seatIndex) => {
+        const seatId = `${row}${seatIndex + 1}`;
+        if (seat === "selected") {
+          updatedSelectedSeats.push(seatId);
+        }
+      });
+    });
+
+    // Remove deselected seats
+    selectedSeats.forEach((seatId) => {
+      if (!updatedSelectedSeats.includes(seatId)) {
+        removeSeat(seatId); // Remove deselected seat from context
+      }
+    });
+
+    // Add newly selected seats
+    updatedSelectedSeats.forEach((seatId) => {
+      if (!selectedSeats.includes(seatId)) {
+        addSeat(seatId); // Add selected seat to context
+      }
+    });
+  }, [seats, selectedSeats, addSeat, removeSeat]);
+
   const handleProceed = () => {
+    clearSeats(); // Clear all previously selected seats from the context
+  
+    // Iterate through all seats to sync the selected ones
+    Object.keys(seats).forEach((row) => {
+      seats[row].forEach((seat, seatIndex) => {
+        if (seat === "selected") {
+          const seatId = `${row}${seatIndex + 1}`;
+          
+          // Only add the seat if it's not already in the selectedSeats context
+          if (!selectedSeats.includes(seatId)) {
+            addSeat(seatId);
+          }
+        }
+      });
+    });
+  
+    // Proceed to the next page
     router.push("/pay");
   };
+  
+
+  useEffect(() => {
+    // Clear selected seats when the modal closes
+    if (!selectedShowtime) {
+      clearSeats();
+    }
+  }, [selectedShowtime, clearSeats]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -128,7 +187,7 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
           &times;
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">
-          Select Seats for {formatShowtime(showtime.startTime)}
+          Select Seats for {formatShowtime(selectedShowtime.startTime)}
         </h2>
 
         {/* Stage Indicator */}
