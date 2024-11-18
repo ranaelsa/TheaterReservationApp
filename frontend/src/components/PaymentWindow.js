@@ -42,6 +42,12 @@ const PaymentWindow = ({ onCompletePayment }) => {
     'http://localhost:8080/api/payment/tickets', 'POST'
   );
 
+    // Use the API for redeeming a coupon
+    const { callApi: redeemCoupon, data: redeemedCoupon, error: couponRedeemError } = useApi(
+      coupon ? `http://localhost:8080/api/coupons/redeem/${coupon}` : null,
+      'PUT'
+    );
+
   // Autofill form with saved user data
   const handleUseSavedPaymentInfo = async () => {
     await getSavedInfo(); // Fetch user data
@@ -54,15 +60,14 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
   };
 
-  // Handle coupon application
+  // Handle coupon redemption
   const applyCoupon = async () => {
     if (coupon) {
-      const response = await fetch(`/api/apply-coupon?code=${coupon}`);
-      const result = await response.json();
-      if (result.success) {
-        setDiscount(result.discountAmount);
-        setFinalAmount(totalAmount - result.discountAmount);
-      } else {
+      await redeemCoupon();
+      if (redeemedCoupon) {
+        setDiscount(redeemedCoupon.amount);
+        setFinalAmount(totalAmount - redeemedCoupon.amount);
+      } else if (couponRedeemError) {
         alert('Invalid coupon code');
       }
     }
