@@ -11,6 +11,7 @@ import com.project.java_backend.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,12 +56,26 @@ public class ShowtimeService {
 
     // Get showtimes by theater ID
     public List<Showtime> getShowtimesByTheaterId(Long theaterId) {
-        return showtimeRepository.findByTheaterId(theaterId);
+        List<Showtime> movieShowtimes =  showtimeRepository.findByTheaterId(theaterId);
+        List<Showtime> showtimes = new ArrayList<Showtime>();
+        for (int i = 0; i < movieShowtimes.size(); i++) {
+            if (!isExpired(movieShowtimes.get(i))) {
+                showtimes.add(movieShowtimes.get(i));
+            }
+        }
+        return showtimes;
     }
 
     // Get showtimes by movie ID
     public List<Showtime> getShowtimesByMovieId(Long movieId) {
-        return showtimeRepository.findByMovieId(movieId);
+        List<Showtime> movieShowtimes =  showtimeRepository.findByMovieId(movieId);
+        List<Showtime> showtimes = new ArrayList<Showtime>();
+        for (int i = 0; i < movieShowtimes.size(); i++) {
+            if (!isExpired(movieShowtimes.get(i))) {
+                showtimes.add(movieShowtimes.get(i));
+            }
+        }
+        return showtimes;
     }
 
     // Get showtimes by both movie and theater ID
@@ -68,7 +83,7 @@ public class ShowtimeService {
         List<Showtime> movieShowtimes = showtimeRepository.findByMovieId(movieId);
         List<Showtime> showtimes = new ArrayList<Showtime>();
         for (int i = 0; i < movieShowtimes.size(); i++) {
-            if (movieShowtimes.get(i).getTheater().getId() == theaterId) {
+            if (movieShowtimes.get(i).getTheater().getId() == theaterId && !isExpired(movieShowtimes.get(i))) {
                 showtimes.add(movieShowtimes.get(i));
             }
         }
@@ -87,5 +102,10 @@ public class ShowtimeService {
             throw new ResourceNotFoundException("Showtime not found with id " + id);
         }
         showtimeRepository.deleteById(id);
+    }
+
+    // Check if showtime is expired
+    public boolean isExpired(Showtime showtime) {
+        return !LocalDateTime.now().isBefore(showtime.getStartTime());
     }
 }
