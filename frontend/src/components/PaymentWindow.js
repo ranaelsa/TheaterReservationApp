@@ -15,7 +15,6 @@ const PaymentWindow = ({ onCompletePayment }) => {
   const [finalAmount, setFinalAmount] = useState(totalAmount);
 
   const userID = localStorage.getItem('userID'); // Check if the user is logged in
-  console.log('User ID:', userID);
   const { callApi, data, loading, error } = useApi(
     userID ? `http://localhost:8080/api/users/${userID}` : null,
     'GET'
