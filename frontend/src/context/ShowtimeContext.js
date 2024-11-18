@@ -64,10 +64,7 @@ export const ShowtimeProvider = ({ children }) => {
 
   // Functions to manage seat selection
   const addSeat = (seatId) => {
-    const updatedSeats = !selectedSeats.includes(seatId) 
-      ? [...selectedSeats, seatId] 
-      : selectedSeats;
-    
+    const updatedSeats = [...selectedSeats, seatId];
     setSelectedSeats(updatedSeats);
     localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
   };

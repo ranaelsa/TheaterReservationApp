@@ -100,38 +100,74 @@ const SeatSelectionModal = ({ onClose }) => {
   };
 
   const [seats, setSeats] = useState(initialSeats);
-  const [localSelectedSeats, setLocalSelectedSeats] = useState(selectedSeats); // Add local state for selected seats
 
   // Toggle seat selection
   const handleSeatClick = (row, seatIndex) => {
+    const seatId = `${row}${seatIndex + 1}`;
     setSeats((prevSeats) => ({
       ...prevSeats,
       [row]: prevSeats[row].map((seat, index) => {
         if (index === seatIndex) {
           if (seat === "available") {
-            setLocalSelectedSeats((prevSeats) => [
-              ...prevSeats,
-              `${row}${seatIndex + 1}`,
-            ]); // Add to local selected seats
-            return "selected"; // Select if available
+            return "selected";
           }
           if (seat === "selected") {
-            setLocalSelectedSeats((prevSeats) =>
-              prevSeats.filter((id) => id !== `${row}${seatIndex + 1}`)
-            ); // Remove from local selected seats
-            return "available"; // Deselect if selected
+            return "available";
           }
         }
-        return seat; // Leave unchanged if unavailable
+        return seat;
       }),
     }));
   };
 
+  useEffect(() => {
+    // After the state updates, sync with context
+    const updatedSelectedSeats = [];
+    Object.keys(seats).forEach((row) => {
+      seats[row].forEach((seat, seatIndex) => {
+        const seatId = `${row}${seatIndex + 1}`;
+        if (seat === "selected") {
+          updatedSelectedSeats.push(seatId);
+        }
+      });
+    });
+
+    // Remove deselected seats
+    selectedSeats.forEach((seatId) => {
+      if (!updatedSelectedSeats.includes(seatId)) {
+        removeSeat(seatId); // Remove deselected seat from context
+      }
+    });
+
+    // Add newly selected seats
+    updatedSelectedSeats.forEach((seatId) => {
+      if (!selectedSeats.includes(seatId)) {
+        addSeat(seatId); // Add selected seat to context
+      }
+    });
+  }, [seats, selectedSeats, addSeat, removeSeat]);
+
   const handleProceed = () => {
-    // After selection, sync with the context
-    localSelectedSeats.forEach((seatId) => addSeat(seatId)); // Add all selected seats to context
+    clearSeats(); // Clear all previously selected seats from the context
+  
+    // Iterate through all seats to sync the selected ones
+    Object.keys(seats).forEach((row) => {
+      seats[row].forEach((seat, seatIndex) => {
+        if (seat === "selected") {
+          const seatId = `${row}${seatIndex + 1}`;
+          
+          // Only add the seat if it's not already in the selectedSeats context
+          if (!selectedSeats.includes(seatId)) {
+            addSeat(seatId);
+          }
+        }
+      });
+    });
+  
+    // Proceed to the next page
     router.push("/pay");
   };
+  
 
   useEffect(() => {
     // Clear selected seats when the modal closes
