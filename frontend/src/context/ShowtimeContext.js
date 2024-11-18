@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import useApi from '../hooks/useApi';
 
 const ShowtimeContext = createContext();
@@ -11,19 +11,20 @@ export const ShowtimeProvider = ({ children }) => {
     return savedTheater ? JSON.parse(savedTheater) : null;
   });
 
-  const { callApi, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
+  const { callApi: getTheaters, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
 
   useEffect(() => {
     const fetchTheaters = async () => {
       try {
-        const theatersData = await callApi();
+        const theatersData = await getTheaters(); 
         setTheaters(theatersData);
       } catch (err) {
         console.error("Error fetching theaters:", err);
       }
     };
-    fetchTheaters();
-  }, [callApi]);
+  
+    fetchTheaters(); 
+  }, []);
 
   const onSelectTheater = (theater) => {
     if (theater !== selectedTheater) {

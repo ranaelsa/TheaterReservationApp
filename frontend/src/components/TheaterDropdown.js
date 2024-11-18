@@ -29,7 +29,7 @@ const TheaterDropdown = () => {
         console.error('Error parsing localStorage:', error);  // Handle parsing error
       }
     }
-  }, [onSelectTheater, theaters]); // Add theaters to the dependency array for safety
+  }, [onSelectTheater]); // Add theaters to the dependency array for safety
 
   return (
     <div className="relative w-1/3">
