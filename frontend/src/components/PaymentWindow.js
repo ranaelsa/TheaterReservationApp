@@ -21,7 +21,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
   const [email, setEmail] = useState('');
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(10); // Example base price
+  const [totalAmount, setTotalAmount] = useState(0); // Example base price
   const [finalAmount, setFinalAmount] = useState(totalAmount);
   
   // Error messages state
@@ -33,32 +33,41 @@ const PaymentWindow = ({ onCompletePayment }) => {
   });
 
   const userID = localStorage.getItem('userID'); // Check if the user is logged in
-  const { callApi, data, loading, error } = useApi(
+  const { callApi: getSavedInfo, data: userInfo, loading, error } = useApi(
     userID ? `http://localhost:8080/api/users/${userID}` : null,
     'GET'
   );
 
+  const { callApi: makePayment, loading: payLoading, error: payError } = useApi(
+    'http://localhost:8080/api/payment/tickets', 'POST'
+  );
+
+    // Use the API for redeeming a coupon
+    const { callApi: redeemCoupon, data: redeemedCoupon, error: couponRedeemError } = useApi(
+      coupon ? `http://localhost:8080/api/coupons/redeem/${coupon}` : null,
+      'PUT'
+    );
+
   // Autofill form with saved user data
   const handleUseSavedPaymentInfo = async () => {
-    const data = await callApi(); // Fetch user data
-    console.log('User data:', data);
-    if (data) {
-      setCardNumber(data.cardNumber || '');
-      setExpiry(data.expiryDate || '');
-      setCvc(data.cvc || '');
-      setEmail(data.email || '');
+    await getSavedInfo(); // Fetch user data
+    console.log('User data:', userInfo);
+    if (userInfo) {
+      setCardNumber(userInfo.cardNumber || '');
+      setExpiry(userInfo.expiryDate || '');
+      setCvc(userInfo.cvc || '');
+      setEmail(userInfo.email || '');
     }
   };
 
-  // Handle coupon application
+  // Handle coupon redemption
   const applyCoupon = async () => {
     if (coupon) {
-      const response = await fetch(`/api/apply-coupon?code=${coupon}`);
-      const result = await response.json();
-      if (result.success) {
-        setDiscount(result.discountAmount);
-        setFinalAmount(totalAmount - result.discountAmount);
-      } else {
+      await redeemCoupon();
+      if (redeemedCoupon) {
+        setDiscount(redeemedCoupon.amount);
+        setFinalAmount(totalAmount - redeemedCoupon.amount);
+      } else if (couponRedeemError) {
         alert('Invalid coupon code');
       }
     }
@@ -128,8 +137,8 @@ const PaymentWindow = ({ onCompletePayment }) => {
     const paymentDetails = {
       movie: selectedMovie,
       theater: selectedTheater,
-      showtime: selectedShowtime,
-      seat: selectedSeats,
+      showtimeId: selectedShowtime.id,
+      seatIds: selectedSeats,
       amount: finalAmount,
       cardNumber,
       expiryDate,
@@ -137,19 +146,17 @@ const PaymentWindow = ({ onCompletePayment }) => {
       email,
     };
 
-    const response = await fetch('/api/process-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(paymentDetails),
-    });
+    try {
+      const result = await makePayment(paymentDetails);
 
-    const result = await response.json();
-    if (result.success) {
-      alert('Payment successful!');
-      onCompletePayment(); // Redirect to confirmation or home page
-    } else {
+      if (result && result.success) {
+        alert('Payment successful!');
+        onCompletePayment(); // Redirect to confirmation or home page
+      } else {
+        alert('Payment failed, please try again.');
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
       alert('Payment failed, please try again.');
     }
   };
@@ -256,12 +263,12 @@ const PaymentWindow = ({ onCompletePayment }) => {
           <p className="text-xl">Final Amount: ${finalAmount.toFixed(2)}</p>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-[#854d0e] hover:bg-[#a16207] text-white py-2 rounded-lg font-bold"
+          disabled={payLoading}
         >
-          Complete Payment
+          {payLoading ? 'Processing Payment...' : 'Complete Payment'}
         </button>
       </form>
     </div>
