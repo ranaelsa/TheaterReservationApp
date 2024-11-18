@@ -4,6 +4,7 @@ import com.project.java_backend.model.Ticket;
 import com.project.java_backend.service.TicketService;
 import com.project.java_backend.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,24 +15,7 @@ public class TicketController {
 
     @Autowired
 	private TicketService ticketService;
-	// private ShowtimeService showtimeService;
-	// private RegisteredUserService registeredUserService;
-	// private SeatService seatService;
-
-    // Deprecated, see paymentController. Create a new ticket
-    // @PostMapping(consumes = "application/json", produces = "application/json")
-    // public Ticket createTicket(@RequestParam Double price,
-    //                            @RequestParam String email,
-    //                            @RequestParam(required = false) Long userId,
-    //                            @RequestParam Long showtimeId,
-    //                            @RequestParam Long seatId) {
-    //     // Assume user, showtime, and seat are fetched from services or repositories
-    //     RegisteredUser user = (userId != null) ? registeredUserService.getUserById(userId) : null;// Fetch user by userId : null;
-    //     Showtime showtime = showtimeService.getShowtimeById(showtimeId); // Fetch showtime by showtimeId;
-    //     Seat seat = seatService.getSeatById(seatId); // Fetch seat by seatId;
-
-    //     return ticketService.createTicket(price, email, user, showtime, seat);
-    // }
+	
 
     // Cancel a ticket by UUID
     @DeleteMapping(value = "/cancel/{code}", consumes = "application/json", produces = "application/json")
@@ -45,6 +29,12 @@ public class TicketController {
     public List<Ticket> getTicketsByUserId(@PathVariable Long userId) {
         return ticketService.getTicketsByUserId(userId);
     }
+
+	// Retrieve the cost of the given tickets
+	@PostMapping(value="/cost", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Double> getCost(@RequestBody List<Long> seatIds) {
+		return ResponseEntity.ok(ticketService.getCost(seatIds));
+	}
 
     // Retrieve a single ticket by ID
     @GetMapping(value = "/{id}", consumes = "application/json", produces = "application/json")

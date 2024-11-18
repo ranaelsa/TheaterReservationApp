@@ -2,11 +2,9 @@ package com.project.java_backend.containers;
 
 import java.util.List;
 
-import com.project.java_backend.model.RegisteredUser;
-
 // Container for sending ticket order info via JSON
 public class TicketOrderContainer {
-	private RegisteredUser registeredUser;
+	private Long registeredUserId;
 	private String email;
 	private String cardNumber;
 	private Long showtimeId;
@@ -18,12 +16,12 @@ public class TicketOrderContainer {
 
 	// Getters and setters
 
-	public RegisteredUser getRegisteredUser() {
-		return registeredUser;
+	public Long getRegisteredUserId() {
+		return registeredUserId;
 	}
 
-	public void setRegisteredUser(RegisteredUser registeredUser) {
-		this.registeredUser = registeredUser;
+	public void setRegisteredUserId(Long registeredUserId) {
+		this.registeredUserId = registeredUserId;
 	}
 
 	public String getEmail() {

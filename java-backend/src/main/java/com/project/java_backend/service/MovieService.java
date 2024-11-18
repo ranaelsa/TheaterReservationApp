@@ -2,6 +2,7 @@ package com.project.java_backend.service;
 
 import com.project.java_backend.model.Movie;
 import com.project.java_backend.model.RegisteredUser;
+import com.project.java_backend.model.Showtime;
 import com.project.java_backend.repository.MovieRepository;
 import com.project.java_backend.repository.RegisteredUserRepository;
 import com.project.java_backend.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -22,6 +24,9 @@ public class MovieService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ShowtimeService showtimeService;
 
     // Create a new movie and notify registered users
     public Movie createMovie(Movie movie) {
@@ -73,6 +78,11 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
+    // Get all movies at one theater
+    public List<Movie> getMoviesByTheater(Long id) {
+        List<Showtime> showtimes = showtimeService.getShowtimesByTheaterId(id);
+        return showtimes.stream().map(Showtime::getMovie).distinct().collect(Collectors.toList());
+    }
     // Update the movie's public status
     public Movie makeMoviePublic(Long id) {
         Movie movie = getMovieById(id);

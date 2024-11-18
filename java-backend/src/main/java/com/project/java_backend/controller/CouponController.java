@@ -2,6 +2,7 @@ package com.project.java_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,5 +32,11 @@ public class CouponController {
 	public ResponseEntity<Coupon> redeemCoupon(@PathVariable String code) {
 		Coupon redeemedCoupon = couponService.redeemCoupon(code);
 		return ResponseEntity.ok(redeemedCoupon);
+	}
+
+	// Get a coupon
+	@GetMapping(value="/{code}", consumes="application/json", produces="application/json")
+	public ResponseEntity<Coupon> getCoupon(@PathVariable String code) {
+		return ResponseEntity.ok(couponService.getCouponByCode(code));
 	}
 }

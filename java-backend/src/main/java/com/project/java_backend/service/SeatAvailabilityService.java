@@ -13,6 +13,8 @@ import com.project.java_backend.exception.SeatNotAvailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -43,7 +45,9 @@ public class SeatAvailabilityService {
 
     // Get list of available seats for a showtime
     public List<SeatAvailability> getAvailableSeatsByShowtimeId(Long showtimeId) {
-        return seatAvailabilityRepository.findByShowtimeId(showtimeId);
+        List<SeatAvailability> availabilities = seatAvailabilityRepository.findByShowtimeId(showtimeId);
+        Collections.sort(availabilities, Comparator.comparing(seatavail->seatavail.getId().getSeatId()));
+        return availabilities;
     }
 
     // Check if a specific seat is available for a showtime

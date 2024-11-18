@@ -50,6 +50,13 @@ public class MovieController {
 		return ResponseEntity.ok(movie);
 	}
 
+	// Get movies by theater ID
+	@GetMapping(value="/theater/{id}", consumes="application/json", produces="application/json")
+	public ResponseEntity<List<Movie>> getMovieByTheater(@PathVariable Long id) {
+		List<Movie> movies = movieService.getMoviesByTheater(id);
+		return ResponseEntity.ok(movies);
+	}
+
 	// Create movie
 	@PostMapping(consumes="application/json", produces="application/json")
 	  public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
