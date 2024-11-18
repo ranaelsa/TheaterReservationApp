@@ -8,8 +8,8 @@ export const ShowtimeProvider = ({ children }) => {
   const [theaters, setTheaters] = useState([]); // Default to an empty array
   const { callApi, data: fetchedTheaters, loading, error } = useApi('http://localhost:8080/api/theaters', 'GET');
 
+  // Fetch theaters when the component mounts (only once)
   useEffect(() => {
-    // Fetch theaters when the component mounts
     const fetchTheaters = async () => {
       try {
         const theatersData = await callApi(); // Fetch theaters
@@ -20,17 +20,20 @@ export const ShowtimeProvider = ({ children }) => {
     };
 
     fetchTheaters();
-  }, [callApi]);
+  }, [callApi]); // Empty dependency array to run this effect only once
 
-  // State for selected theater and other states
+  // State for selected theater
   const [selectedTheater, setSelectedTheater] = useState(() => {
     const savedTheater = localStorage.getItem('selectedTheater');
-    return savedTheater ? savedTheater : ''; 
+    return savedTheater ? JSON.parse(savedTheater) : null; // Parse JSON if available
   });
 
   const onSelectTheater = (theater) => {
-    setSelectedTheater(theater);
-    localStorage.setItem('selectedTheater', theater);
+    // Only update if the new selection is different from the current one
+    if (theater !== selectedTheater) {
+      setSelectedTheater(theater);
+      localStorage.setItem('selectedTheater', JSON.stringify(theater)); // Store as JSON
+    }
   };
 
   // State for show window visibility and other showtime logic
@@ -52,7 +55,6 @@ export const ShowtimeProvider = ({ children }) => {
       theaters,
       selectedTheater,
       onSelectTheater,
-      setSelectedTheater,
       openShowWindow,
       closeShowWindow,
       showWindow,

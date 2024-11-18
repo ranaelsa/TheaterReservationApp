@@ -4,6 +4,18 @@ import { useRouter } from "next/navigation";
 const SeatSelectionModal = ({ showtime, onClose }) => {
   const router = useRouter();
 
+  const formatShowtime = (datetime) => {
+    const date = new Date(datetime);
+    return date.toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   // Define the seat layout with row and seat labels
   const initialSeats = {
     A: [
@@ -116,7 +128,7 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
           &times;
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">
-          Select Seats for {showtime}
+          Select Seats for {formatShowtime(showtime.startTime)}
         </h2>
 
         {/* Stage Indicator */}
