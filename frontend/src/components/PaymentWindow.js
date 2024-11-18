@@ -13,6 +13,14 @@ const PaymentWindow = ({ onCompletePayment }) => {
   const [discount, setDiscount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(10); // Example base price
   const [finalAmount, setFinalAmount] = useState(totalAmount);
+  
+  // Error messages state
+  const [errors, setErrors] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvc: '',
+    email: ''
+  });
 
   const userID = localStorage.getItem('userID'); // Check if the user is logged in
   console.log('User ID:', userID);
@@ -47,9 +55,66 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
   };
 
-  // Handle payment submission
+  const validateField = (name, value) => {
+    let errorMessage = '';
+  
+    switch (name) {
+      case 'email':
+        errorMessage = /\S+@\S+\.\S+/.test(value) ? '' : 'Invalid email format.';
+        break;
+      case 'cardNumber':
+        errorMessage = /^\d{16}$/.test(value) ? '' : 'Card number must be 16 digits.';
+        break;
+      case 'expiryDate':
+        errorMessage = /^\d{4}$/.test(value) ? '' : 'Expiry date must be in MMYY format.';
+        break;
+      case 'cvc':
+        errorMessage = /^\d{3,4}$/.test(value) ? '' : 'CVC must be 3 or 4 digits.';
+        break;
+      default:
+        break;
+    }
+
+    return errorMessage;
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const errorMessage = validateField(name, value);
+
+    // Update state
+    switch (name) {
+      case 'cardNumber':
+        setCardNumber(value);
+        break;
+      case 'expiryDate':
+        setExpiry(value);
+        break;
+      case 'cvc':
+        setCvc(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: errorMessage
+    }));
+  };
+
   const handlePayment = async (e) => {
     e.preventDefault();
+
+    // Ensure there are no validation errors
+    if (Object.values(errors).some((error) => error)) {
+      alert('Please correct the errors before submitting.');
+      return;
+    }
 
     const paymentDetails = {
       movie: selectedMovie,
@@ -80,7 +145,6 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
   };
 
-  // Render logic
   return (
     <div className="p-6 max-w-md mx-auto bg-white rounded shadow-md mt-16">
       <h2 className="text-2xl font-bold mb-4 text-black">Confirm Payment Details</h2>
@@ -104,34 +168,40 @@ const PaymentWindow = ({ onCompletePayment }) => {
           <label className="block text-gray-700">Card Number</label>
           <input
             type="text"
+            name="cardNumber"
             value={cardNumber}
-            onChange={(e) => setCardNumber(e.target.value)}
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black"
             placeholder="Card Number"
             required
           />
+          {errors.cardNumber && <p className="text-red-500 text-sm">{errors.cardNumber}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Expiry Date</label>
           <input
             type="text"
+            name="expiryDate"
             value={expiryDate}
-            onChange={(e) => setExpiry(e.target.value)}
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black"
             placeholder="MMYY"
             required
           />
+          {errors.expiryDate && <p className="text-red-500 text-sm">{errors.expiryDate}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">CVC</label>
           <input
             type="text"
+            name="cvc"
             value={cvc}
-            onChange={(e) => setCvc(e.target.value)}
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black"
             placeholder="CVC"
             required
           />
+          {errors.cvc && <p className="text-red-500 text-sm">{errors.cvc}</p>}
         </div>
 
         {/* Email Field */}
@@ -139,12 +209,14 @@ const PaymentWindow = ({ onCompletePayment }) => {
           <label className="block text-gray-700">Email</label>
           <input
             type="email"
+            name="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-black"
             placeholder="Email"
             required
           />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
 
         {/* Coupon Code */}
