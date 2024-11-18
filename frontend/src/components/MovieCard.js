@@ -3,10 +3,11 @@ import Image from "next/image";
 import { useShowtime } from "@/context/ShowtimeContext";
 
 const MovieCard = ({ movie }) => { // Default theaters to an empty array
-  const { openShowWindow } = useShowtime();
+  const { openShowWindow, onSelectMovie } = useShowtime();
 
   const handleBookNowClick = () => {
     console.log("Book Now clicked for", movie.title);
+    onSelectMovie(movie);
     openShowWindow(movie);
   };
 

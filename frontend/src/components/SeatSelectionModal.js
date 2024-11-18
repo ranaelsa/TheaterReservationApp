@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useShowtime } from "../context/ShowtimeContext"; // Import the custom hook
 
-const SeatSelectionModal = ({ showtime, onClose }) => {
+const SeatSelectionModal = ({ onClose }) => {
   const router = useRouter();
-  const { selectedSeats, addSeat, removeSeat, clearSeats } = useShowtime(); // Get context values for seat management
+  const { selectedShowtime, selectedSeats, addSeat, removeSeat, clearSeats } = useShowtime(); // Get context values for seat management
 
   const formatShowtime = (datetime) => {
     const date = new Date(datetime);
@@ -135,10 +135,10 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
 
   useEffect(() => {
     // Clear selected seats when the modal closes
-    if (!showtime) {
+    if (!selectedShowtime) {
       clearSeats();
     }
-  }, [showtime, clearSeats]);
+  }, [selectedShowtime, clearSeats]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -151,7 +151,7 @@ const SeatSelectionModal = ({ showtime, onClose }) => {
           &times;
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">
-          Select Seats for {formatShowtime(showtime.startTime)}
+          Select Seats for {formatShowtime(selectedShowtime.startTime)}
         </h2>
 
         {/* Stage Indicator */}

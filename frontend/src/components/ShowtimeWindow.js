@@ -64,6 +64,7 @@ const ShowtimeWindow = () => {
   const handleShowtimeClick = (showtime) => {
     onSelectShowtime(showtime);
     setShowSeatSelection(true);
+    console.log("Selected showtime:", showtime);
   };
 
   const formatShowtime = (datetime) => {
@@ -137,7 +138,6 @@ const ShowtimeWindow = () => {
 
         {showSeatSelection && (
           <SeatSelectionModal
-            showtime={selectedShowtime}
             onClose={() => setShowSeatSelection(false)}
           />
         )}

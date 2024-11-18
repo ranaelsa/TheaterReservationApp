@@ -34,28 +34,55 @@ export const ShowtimeProvider = ({ children }) => {
   };
 
   // State for movies, showtimes, and seats
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const [selectedShowtime, setSelectedShowtime] = useState(null);
-  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(() => {
+    const savedMovie = localStorage.getItem('selectedMovie');
+    return savedMovie ? JSON.parse(savedMovie) : null;
+  });
+
+  const [selectedShowtime, setSelectedShowtime] = useState(() => {
+    const savedShowtime = localStorage.getItem('selectedShowtime');
+    return savedShowtime ? JSON.parse(savedShowtime) : null;
+  });  
+
+  const [selectedSeats, setSelectedSeats] = useState(() => {
+    const savedSeats = localStorage.getItem('selectedSeats');
+    return savedSeats ? JSON.parse(savedSeats) : [];
+  });
 
   // Functions to manage showtime selection
   const onSelectShowtime = (showtime) => {
     setSelectedShowtime(showtime);
+    localStorage.setItem('selectedShowtime', JSON.stringify(showtime));
     setSelectedSeats([]); // Clear seat selection when showtime changes
+  };
+
+  // Function to manage movie selection
+  const onSelectMovie = (movie) => {
+    setSelectedMovie(movie);
+    localStorage.setItem('selectedMovie', JSON.stringify(movie));
   };
 
   // Functions to manage seat selection
   const addSeat = (seatId) => {
-    if (!selectedSeats.includes(seatId)) {
-      setSelectedSeats((prevSeats) => [...prevSeats, seatId]);
-    }
+    const updatedSeats = !selectedSeats.includes(seatId) 
+      ? [...selectedSeats, seatId] 
+      : selectedSeats;
+    
+    setSelectedSeats(updatedSeats);
+    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
   };
 
   const removeSeat = (seatId) => {
-    setSelectedSeats((prevSeats) => prevSeats.filter((id) => id !== seatId));
+    const updatedSeats = selectedSeats.filter((id) => id !== seatId);
+    
+    setSelectedSeats(updatedSeats);
+    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
   };
 
-  const clearSeats = () => setSelectedSeats([]);
+  const clearSeats = () => {
+    setSelectedSeats([]);
+    localStorage.removeItem('selectedSeats');
+  };
 
   // Manage the show window visibility
   const [showWindow, setShowWindow] = useState(false);
@@ -77,6 +104,7 @@ export const ShowtimeProvider = ({ children }) => {
         theaters,
         selectedTheater,
         onSelectTheater,
+        onSelectMovie,
         selectedMovie,
         setSelectedMovie,
         selectedShowtime,
