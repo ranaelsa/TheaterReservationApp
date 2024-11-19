@@ -17,38 +17,49 @@ const HomePage = () => {
   const [selectedTheater, setSelectedTheater] = useState('');
   const [isClient, setIsClient] = useState(false);
 
-  const { callApi, data: publicMovies, loading, error } = useApi('http://localhost:8080/api/movies/public');
+  const { callApi: callApiPublic, data: publicMovies, loading, error } = useApi('http://localhost:8080/api/movies/public');
   const { callApi: callApiNonPublic, data: nonPublicMovies, loading: loadingNonPublic, error: errorNonPublic } = useApi('http://localhost:8080/api/movies/nonpublic');
-
-  // Use an empty array if movies is null or undefined
-  const filteredMovies = (publicMovies || []).filter((movie) =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { callApi: callApiByTheater, data: moviesByTheaterData, loading: moviesByTheaterLoading, error: moviesByTheaterError } = useApi(`http://localhost:8080/api/movies/theater/${selectedTheater?.id || ''}`);
 
   useEffect(() => {
-    setIsClient(true); // This will only execute on the client
+    setIsClient(true);
   }, []);
 
   useEffect(() => {
-    // Fetch public movies if not already loaded
     if (!publicMovies) {
-      callApi();
+      callApiPublic();
     }
-  }, [callApi, publicMovies]);
+  }, [callApiPublic, publicMovies]);
 
   useEffect(() => {
-    // Fetch non-public movies if not already loaded
     if (!nonPublicMovies) {
       callApiNonPublic();
     }
   }, [callApiNonPublic, nonPublicMovies]);
 
-  if (!isClient) return null; // Avoid rendering on the server
-  if (loading || loadingNonPublic) return <div>Loading...</div>; // Show loading message while fetching data
-  if (error || errorNonPublic) return <div>Error loading movies: {error || errorNonPublic}</div>; // Show error message if something goes wrong
+  useEffect(() => {
+    if (selectedTheater) {
+      callApiByTheater().then(() => {
+        console.log('Fetched movies for theater:', moviesByTheaterData); // Debug here
+      });
+    }
+  }, [callApiByTheater, selectedTheater]);
+
+  // Modified filtering logic
+  const filteredMovies = selectedTheater
+  ? (moviesByTheaterData || []).filter(movie =>
+      movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  : (publicMovies || []).filter(movie =>
+      movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  if (!isClient) return null;
+  if (loading || loadingNonPublic || moviesByTheaterLoading) return <div>Loading...</div>;
+  if (error || errorNonPublic || moviesByTheaterError) return <div>Error loading movies: {error || errorNonPublic || moviesByTheaterError}</div>;
 
   return (
-    <ShowtimeProvider> {/* Wrap the entire content in ShowtimeProvider */}
+    <ShowtimeProvider>
       <div>
         <Navbar />
         <HeroSection />
@@ -65,12 +76,16 @@ const HomePage = () => {
           </div>
 
           <div className="w-full max-w-7xl mt-8">
-            <MovieGrid movies={filteredMovies} />
+            <MovieGrid 
+              movies={filteredMovies} 
+            />
+            {selectedTheater && moviesByTheaterData?.length === 0 && (
+              <p className="text-center mt-4">No movies available for this theater.</p>
+            )}
           </div>
         </div>
 
         <Footer />
-        
         <ShowtimeWindow />
       </div>
     </ShowtimeProvider>

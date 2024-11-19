@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const useApi = (endpoint, method = 'GET') => {
+const useApi = (initialEndpoint = '', method = 'GET') => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
 
-    const callApi = async (body = null) => {
+    const callApi = async (endpoint = initialEndpoint, body = null) => {
         setLoading(true);
         setError(null);
 
@@ -22,7 +22,7 @@ const useApi = (endpoint, method = 'GET') => {
             setData(response.data);
             return response.data;
         } catch (err) {
-            setError(err.response.data || err.message || 'Something went wrong');
+            setError(err.response?.data || err.message || 'Something went wrong');
             console.error(err);
         } finally {
             setLoading(false);
@@ -33,4 +33,3 @@ const useApi = (endpoint, method = 'GET') => {
 };
 
 export default useApi;
-

@@ -1,35 +1,33 @@
+// TheaterDropdown.js
 import React, { useEffect } from 'react';
-import { useShowtime } from '../context/ShowtimeContext'; // Import useShowtime from context
+import { useShowtime } from '../context/ShowtimeContext';
 
 const TheaterDropdown = () => {
-  // Access theaters and selectedTheater from context
   const { theaters, selectedTheater, onSelectTheater } = useShowtime();
 
-  // Update selected theater (handled by context)
   const handleSelectTheater = (theaterName) => {
-    // Find the theater object based on the name
+    console.log('Selecting theater:', theaterName);
     const selected = theaters.find((theater) => theater.name === theaterName);
     if (selected) {
-      onSelectTheater(selected); // Pass the full object to onSelectTheater
+      console.log('Found theater:', selected);
+      onSelectTheater(selected);
     }
   };
 
-  // Retrieve saved theater from localStorage when component mounts
   useEffect(() => {
     const savedTheater = localStorage.getItem('selectedTheater');
     if (savedTheater) {
       try {
-        const parsedTheater = JSON.parse(savedTheater); // Parse the saved object
-        // Ensure the saved theater exists in the theaters list
+        const parsedTheater = JSON.parse(savedTheater);
         const validTheater = theaters.find((theater) => theater.id === parsedTheater.id);
         if (validTheater) {
-          onSelectTheater(validTheater); // Update the context with saved theater
+          onSelectTheater(validTheater);
         }
       } catch (error) {
-        console.error('Error parsing localStorage:', error);  // Handle parsing error
+        console.error('Error parsing localStorage:', error);
       }
     }
-  }, [onSelectTheater]); // Add theaters to the dependency array for safety
+  }, [theaters, onSelectTheater]);
 
   return (
     <div className="relative w-1/3">
