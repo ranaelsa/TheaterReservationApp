@@ -39,7 +39,8 @@ public class PaymentController {
 																			orderInfo.getRegisteredUserId(), 
 																			orderInfo.getShowtimeId(), 
 																			orderInfo.getSeatIds(), 
-																			orderInfo.getCardNumber());
+																			orderInfo.getCardNumber(),
+																			orderInfo.getPrice());
 		return ResponseEntity.ok(createdTickets);
 	}
 
