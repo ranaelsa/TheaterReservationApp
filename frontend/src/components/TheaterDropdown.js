@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from 'react';
 import { useShowtime } from '../context/ShowtimeContext'; // Import useShowtime from context
 
@@ -7,30 +8,40 @@ const TheaterDropdown = () => {
 
   // Update selected theater (handled by context)
   const handleSelectTheater = (theaterName) => {
-    // Find the theater object based on the name
-    const selected = theaters.find((theater) => theater.name === theaterName);
-    if (selected) {
-      onSelectTheater(selected); // Pass the full object to onSelectTheater
+    if (theaterName === "") {
+      onSelectTheater(null); // Clear the selected theater
+    } else {
+      // Find the theater object based on the name
+      const selected = theaters.find((theater) => theater.name === theaterName);
+      if (selected) {
+        onSelectTheater(selected); // Update the context with the selected theater
+      }
     }
   };
+  
 
   // Retrieve saved theater from localStorage when component mounts
   useEffect(() => {
     const savedTheater = localStorage.getItem('selectedTheater');
     if (savedTheater) {
       try {
-        const parsedTheater = JSON.parse(savedTheater); // Parse the saved object
-        // Ensure the saved theater exists in the theaters list
+        const parsedTheater = JSON.parse(savedTheater);
         const validTheater = theaters.find((theater) => theater.id === parsedTheater.id);
         if (validTheater) {
-          onSelectTheater(validTheater); // Update the context with saved theater
+          onSelectTheater(validTheater);
+        } else {
+          onSelectTheater(null); // Clear if the saved theater is invalid
         }
       } catch (error) {
-        console.error('Error parsing localStorage:', error);  // Handle parsing error
+        console.error('Error parsing localStorage:', error);
+        onSelectTheater(null); // Clear on parsing error
       }
+    } else {
+      onSelectTheater(null); // Ensure selectedTheater is null if nothing is saved
     }
-  }, [onSelectTheater]); // Add theaters to the dependency array for safety
-
+  }, [theaters, onSelectTheater]);
+  
+  
   return (
     <div className="relative w-1/3">
       <select

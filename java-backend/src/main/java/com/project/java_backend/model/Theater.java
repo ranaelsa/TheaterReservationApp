@@ -3,6 +3,7 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -34,6 +35,10 @@ public class Theater {
     @JsonManagedReference("theater-showtimes")
     @JsonIgnore
     private List<Showtime> showtimes;
+
+    @ManyToMany(mappedBy = "theaters")
+    @JsonIgnore
+    private Set<Movie> movies;
 
     // Constructors
     public Theater() {
@@ -84,6 +89,13 @@ public class Theater {
 
     public void setShowtimes(List<Showtime> showtimes) {
         this.showtimes = showtimes;
+    }
+
+    public Set<Movie> getMovies() {
+        return movies;
+    }
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
     }
 
 }

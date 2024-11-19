@@ -3,6 +3,7 @@ package com.project.java_backend.model;
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -40,6 +41,14 @@ public class Movie {
     @JsonManagedReference("movie-showtimes")
     @JsonIgnore
     private List<Showtime> showtimes;
+
+    @ManyToMany
+    @JoinTable(
+    name = "movie_theaters",
+    joinColumns = @JoinColumn(name = "movie_id"),
+    inverseJoinColumns = @JoinColumn(name = "theater_id")
+    )
+    private Set<Theater> theaters;
 
     // Constructors
     public Movie() {
@@ -121,5 +130,12 @@ public class Movie {
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+    }
+    public Set<Theater> getTheaters() {
+        return theaters;
+    }
+    
+    public void setTheaters(Set<Theater> theaters) {
+        this.theaters = theaters;
     }
 }

@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import useApi from '../hooks/useApi';
 
@@ -26,13 +27,27 @@ export const ShowtimeProvider = ({ children }) => {
     fetchTheaters(); 
   }, []);
 
-  const onSelectTheater = (theater) => {
-    if (theater !== selectedTheater) {
-      setSelectedTheater(theater);
-      localStorage.setItem('selectedTheater', JSON.stringify(theater));
-    }
-  };
+const onSelectTheater = (theater) => {
+  setSelectedTheater(theater);
+  if (theater) {
+    localStorage.setItem('selectedTheater', JSON.stringify(theater));
+  } else {
+    localStorage.removeItem('selectedTheater'); // Remove from localStorage when clearing
+  }
+};
 
+  useEffect(() => {
+    console.log('Fetched Theaters:', fetchedTheaters);
+  }, [fetchedTheaters]);
+  
+  useEffect(() => {
+    console.log('Theaters State:', theaters);
+  }, [theaters]);
+  
+  useEffect(() => {
+    console.log('Selected Theater State:', selectedTheater);
+  }, [selectedTheater]);
+  
   // State for movies, showtimes, and seats
   const [selectedMovie, setSelectedMovie] = useState(() => {
     const savedMovie = localStorage.getItem('selectedMovie');
