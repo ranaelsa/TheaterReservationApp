@@ -78,11 +78,16 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    // Get all movies at one theater
+    // Get all public movies at one theater
     public List<Movie> getMoviesByTheater(Long id) {
         List<Showtime> showtimes = showtimeService.getShowtimesByTheaterId(id);
-        return showtimes.stream().map(Showtime::getMovie).distinct().collect(Collectors.toList());
+        return showtimes.stream()
+                .map(Showtime::getMovie)
+                .filter(Movie::isPublic) // Filter to include only public movies
+                .distinct()
+                .collect(Collectors.toList());
     }
+    
     // Update the movie's public status
     public Movie makeMoviePublic(Long id) {
         Movie movie = getMovieById(id);

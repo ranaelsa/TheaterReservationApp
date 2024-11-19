@@ -42,14 +42,6 @@ public class Movie {
     @JsonIgnore
     private List<Showtime> showtimes;
 
-    @ManyToMany
-    @JoinTable(
-    name = "movie_theaters",
-    joinColumns = @JoinColumn(name = "movie_id"),
-    inverseJoinColumns = @JoinColumn(name = "theater_id")
-    )
-    private Set<Theater> theaters;
-
     // Constructors
     public Movie() {
         // Default constructor
@@ -130,12 +122,5 @@ public class Movie {
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
-    }
-    public Set<Theater> getTheaters() {
-        return theaters;
-    }
-    
-    public void setTheaters(Set<Theater> theaters) {
-        this.theaters = theaters;
     }
 }
