@@ -9,12 +9,21 @@ public class TicketOrderContainer {
 	private String cardNumber;
 	private Long showtimeId;
 	private List<Long> seatIds;
+	private Double price;
 
 	public TicketOrderContainer() {
 		// Default constructor
 	}
 
 	// Getters and setters
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
 	public Long getRegisteredUserId() {
 		return registeredUserId;

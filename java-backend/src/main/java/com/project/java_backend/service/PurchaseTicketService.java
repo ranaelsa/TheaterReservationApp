@@ -27,13 +27,7 @@ public class PurchaseTicketService extends PaymentService{
     private RegisteredUserService registeredUserService;
 
     // Purchase 1 or more tickets for a single showtime
-    public List<Ticket> purchaseTickets(String email, Long registeredUserId, Long showtimeId, List<Long> seatIds, String cardNumber) {
-
-        // Calculate the total cost of tickets
-        Double price = 0.0;
-        for (int i = 0; i < seatIds.size(); i++) {
-            price += seatService.getSeatById(seatIds.get(i)).getPrice();
-        }
+    public List<Ticket> purchaseTickets(String email, Long registeredUserId, Long showtimeId, List<Long> seatIds, String cardNumber, Double price) {
 
         // Validate restriction on 10% early bookings
         if (!showtimeService.getShowtimeById(showtimeId).getMovie().isPublic() && 
@@ -42,7 +36,7 @@ public class PurchaseTicketService extends PaymentService{
             }
 
         // Make payment before continuing
-        if (cardNumber == null) {
+        if (cardNumber == null || price == 0) {
             //For payment covered completely by coupon
             makePayment(price, email);
         } else {
