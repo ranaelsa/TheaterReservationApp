@@ -11,19 +11,39 @@ import { ShowtimeProvider } from '@/context/ShowtimeContext';
 import ShowtimeWindow from '@/components/ShowtimeWindow';
 import './globals.css';
 import useApi from '@/hooks/useApi';
+import { useShowtime } from '@/context/ShowtimeContext';
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTheater, setSelectedTheater] = useState('');
+  const { theaters, selectedTheater, onSelectTheater } = useShowtime();
   const [isClient, setIsClient] = useState(false);
+  
 
   const { callApi, data: publicMovies, loading, error } = useApi('http://localhost:8080/api/movies/public');
   const { callApi: callApiNonPublic, data: nonPublicMovies, loading: loadingNonPublic, error: errorNonPublic } = useApi('http://localhost:8080/api/movies/nonpublic');
-
+  useEffect(() => {
+    if (publicMovies) {
+      console.log('Public Movies Data:', publicMovies);
+      console.log('selectedTheater:', selectedTheater);
+    }
+  }, [publicMovies]);
+  
   // Use an empty array if movies is null or undefined
-  const filteredMovies = (publicMovies || []).filter((movie) =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMovies = (publicMovies || []).filter((movie) => {
+    const matchesSearchQuery = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    const matchesSelectedTheater = selectedTheater
+      ? Array.isArray(movie.theaters) &&
+        movie.theaters.some((theater) => {
+          console.log(`Comparing theater.id (${theater.id}) with selectedTheater.id (${selectedTheater.id})`);
+          return String(theater.id) === String(selectedTheater.id);
+        })
+      : true;
+  
+    return matchesSearchQuery && matchesSelectedTheater;
+  });
+  
+  
 
   useEffect(() => {
     setIsClient(true); // This will only execute on the client
@@ -48,7 +68,7 @@ const HomePage = () => {
   if (error || errorNonPublic) return <div>Error loading movies: {error || errorNonPublic}</div>; // Show error message if something goes wrong
 
   return (
-    <ShowtimeProvider> {/* Wrap the entire content in ShowtimeProvider */}
+    <> {/* Wrap the entire content in ShowtimeProvider */}
       <div>
         <Navbar />
         <HeroSection />
@@ -60,7 +80,7 @@ const HomePage = () => {
 
             <div className="flex w-full gap-4">
               <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-              <TheaterDropdown selectedTheater={selectedTheater} onSelectTheater={setSelectedTheater} />
+              <TheaterDropdown selectedTheater={selectedTheater} />
             </div>
           </div>
 
@@ -73,7 +93,7 @@ const HomePage = () => {
         
         <ShowtimeWindow />
       </div>
-    </ShowtimeProvider>
+    </>
   );
 };
 

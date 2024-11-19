@@ -104,6 +104,7 @@ const ShowtimeWindow = () => {
             onChange={handleTheaterChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700"
           >
+            <option value="">Select a Theater</option>
             {theaters.map((theater) => (
               <option key={theater.id} value={theater.name}>
                 {theater.name}
