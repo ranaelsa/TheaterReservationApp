@@ -46,7 +46,7 @@ public class PurchaseTicketService extends PaymentService{
             //For payment covered completely by coupon
             makePayment(price, email);
         } else {
-            makePayment(price, email, cardNumber);
+            makePayment(price,  cardNumber, email);
         }
 
         // Reserve the seats and create tickets

@@ -42,11 +42,16 @@ const PaymentWindow = ({ onCompletePayment }) => {
     'http://localhost:8080/api/payment/tickets', 'POST'
   );
 
-    // Use the API for redeeming a coupon
-    const { callApi: redeemCoupon, data: redeemedCoupon, error: couponRedeemError } = useApi(
-      coupon ? `http://localhost:8080/api/coupons/redeem/${coupon}` : null,
-      'PUT'
-    );
+  // Use the API for getting a coupon
+  const { callApi: applyCoupon, data: appliedCoupon, error: couponApplicationError } = useApi(
+    coupon ? `http://localhost:8080/api/coupons/${coupon}` : null,
+    'GET'
+  );
+
+  // Use API to get cost of tickets
+  const { callApi: getTicketCost, data: ticketCost, error: ticketCostError } = useApi(
+    'http://localhost:8080/api/tickets/cost', 'POST'
+  );
 
   // Autofill form with saved user data
   const handleUseSavedPaymentInfo = async () => {
@@ -60,18 +65,33 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
   };
 
-  // Handle coupon redemption
-  const applyCoupon = async () => {
+  // Handle coupon application
+  const useCoupon = async () => {
     if (coupon) {
-      await redeemCoupon();
-      if (redeemedCoupon) {
-        setDiscount(redeemedCoupon.amount);
-        setFinalAmount(totalAmount - redeemedCoupon.amount);
-      } else if (couponRedeemError) {
+      await applyCoupon();
+      if (appliedCoupon) {
+        setDiscount(appliedCoupon.amount);
+        setFinalAmount(totalAmount - appliedCoupon.amount);
+      } else if (couponApplicationError) {
         alert('Invalid coupon code');
       }
     }
   };
+
+  // Calculate total amount
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      getTicketCost(selectedSeats); // Fetch ticket cost
+    }
+  }, [selectedSeats]);
+  
+  // Ensure that ticketCost is set after API response is received
+  useEffect(() => {
+    if (ticketCost) {
+      setTotalAmount(ticketCost); // Set the base ticket cost
+      setFinalAmount(ticketCost - discount); // Apply discount to the total amount
+    }
+  }, [ticketCost, discount]);
 
   const validateField = (name, value) => {
     let errorMessage = '';
@@ -135,16 +155,15 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
 
     const paymentDetails = {
-      movie: selectedMovie,
-      theater: selectedTheater,
       showtimeId: selectedShowtime.id,
       seatIds: selectedSeats,
-      amount: finalAmount,
       cardNumber,
-      expiryDate,
-      cvc,
       email,
     };
+
+    if (userID) {
+      paymentDetails.registeredUserId = userID;
+    }
 
     try {
       const result = await makePayment(paymentDetails);
@@ -248,7 +267,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
             />
             <button
               type="button"
-              onClick={applyCoupon}
+              onClick={useCoupon}
               className="bg-[#854d0e] hover:bg-[#a16207] text-white px-4 py-2 rounded-r-lg"
             >
               Apply
@@ -258,7 +277,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
 
         {/* Display Amount and Discount */}
         <div className="mb-6 text-lg font-semibold text-black">
-          <p>Subtotal: ${totalAmount.toFixed(2)}</p>
+          <p>Subtotal: ${totalAmount}</p>
           {discount > 0 && <p>Discount: -${discount.toFixed(2)}</p>}
           <p className="text-xl">Final Amount: ${finalAmount.toFixed(2)}</p>
         </div>
