@@ -36,9 +36,7 @@ public class Theater {
     @JsonIgnore
     private List<Showtime> showtimes;
 
-    @ManyToMany(mappedBy = "theaters")
-    @JsonIgnore
-    private Set<Movie> movies;
+
 
     // Constructors
     public Theater() {
@@ -91,11 +89,5 @@ public class Theater {
         this.showtimes = showtimes;
     }
 
-    public Set<Movie> getMovies() {
-        return movies;
-    }
-    public void setMovies(Set<Movie> movies) {
-        this.movies = movies;
-    }
 
 }
