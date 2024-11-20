@@ -29,9 +29,16 @@ public class TicketService {
     @Autowired
     private SeatService seatService;
 
+    @Autowired
+    private RegisteredUserService registeredUserService;
+
     // Create a new ticket (used by PurchaseTicketService to finalize purchase)
-    public Ticket createTicket(Double price, String email, RegisteredUser user, Showtime showtime, Seat seat) {
-        Ticket ticket = new Ticket(price, email, user, showtime, seat);
+    public Ticket createTicket(Double price, String email, Long userId, Showtime showtime, Seat seat) {
+        if (userId == null) {
+            Ticket ticket = new Ticket(price, email, null, showtime, seat);
+            return ticketRepository.save(ticket);
+        }
+        Ticket ticket = new Ticket(price, email, registeredUserService.getUserById(userId), showtime, seat);
         return ticketRepository.save(ticket);
     }
 

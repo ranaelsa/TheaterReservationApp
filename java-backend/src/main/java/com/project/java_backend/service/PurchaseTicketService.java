@@ -1,5 +1,6 @@
 package com.project.java_backend.service;
 
+import com.project.java_backend.exception.SeatNotAvailableException;
 import com.project.java_backend.model.*;
 
 import java.time.format.DateTimeFormatter;
@@ -24,13 +25,15 @@ public class PurchaseTicketService extends PaymentService{
     @Autowired
     private ShowtimeService showtimeService;
 
-    @Autowired
-    private RegisteredUserService registeredUserService;
-
     // Purchase 1 or more tickets for a single showtime
     public List<Ticket> purchaseTickets(String email, Long registeredUserId, Long showtimeId, List<Long> seatIds, String cardNumber, Double price) {
 
-        if (price == null){price = 0.0;}
+        //Ensure all seats are available
+        for (int i = 0; i < seatIds.size(); i++) {
+            if (!seatAvailabilityService.isSeatAvailable(seatIds.get(i), showtimeId)) {
+                throw new SeatNotAvailableException("Seat is already reserved");
+            }
+        }
 
         // Validate restriction on 10% early bookings
         if (!showtimeService.getShowtimeById(showtimeId).getMovie().isPublic() && 
@@ -39,7 +42,7 @@ public class PurchaseTicketService extends PaymentService{
             }
 
         // Make payment before continuing
-        if (cardNumber == null || price == 0) {
+        if (cardNumber == null || price == null || price == 0) {
             //For payment covered completely by coupon
             makePayment(price, email);
         } else {
@@ -52,7 +55,7 @@ public class PurchaseTicketService extends PaymentService{
             seatAvailabilityService.reserveSeat(seatIds.get(i), showtimeId);
             tickets.add(ticketService.createTicket(seatService.getSeatById(seatIds.get(i)).getPrice(), 
                                                     email, 
-                                                    null,
+                                                    registeredUserId,
                                                     showtimeService.getShowtimeById(showtimeId), 
                                                     seatService.getSeatById(seatIds.get(i))));
         }
@@ -76,7 +79,7 @@ public class PurchaseTicketService extends PaymentService{
                             "Theater: " + tickets.get(0).getSeat().getTheater().getName() + "\n\n";
         for (int i = 0; i < tickets.size(); i++) {
             emailbody = emailbody.concat(
-                "Ticket " + i + "\n" +
+                "Ticket " + (i+1) + "\n" +
                 "\tTicket Code: " + tickets.get(i).getCode() + "\n" +
                 "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n\n"
             );

@@ -41,6 +41,34 @@ public class RegisteredUserService {
         return userRepository.save(user);
     }
 
+    // Test user input fields
+    public void testUser(RegisteredUser user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Missing email");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+        if (user.getCardNumber() == null ||
+            user.getExpiryDate() == null ||
+            user.getCvc() == null) {
+                throw new IllegalArgumentException("Missing card details");
+        }
+        if (user.getCardNumber().isBlank() || 
+			user.getCardNumber().length() != 16 ||
+			user.getExpiryDate().isBlank() || 
+			user.getExpiryDate().length() != 4 ||
+			user.getCvc().isBlank() || 
+			user.getCvc().length() != 3
+			) {
+				throw new IllegalArgumentException("Invalid card details");
+		}
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Missing password");
+        }
+        
+    }
+
     // Update existing user
     public RegisteredUser updateUser(Long id, RegisteredUser userDetails) {
         RegisteredUser user = getUserById(id);
