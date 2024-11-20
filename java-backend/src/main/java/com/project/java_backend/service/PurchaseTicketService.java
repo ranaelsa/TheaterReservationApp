@@ -2,6 +2,7 @@ package com.project.java_backend.service;
 
 import com.project.java_backend.model.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class PurchaseTicketService extends PaymentService{
     // Purchase 1 or more tickets for a single showtime
     public List<Ticket> purchaseTickets(String email, Long registeredUserId, Long showtimeId, List<Long> seatIds, String cardNumber, Double price) {
 
+        if (price == null){price = 0.0;}
+
         // Validate restriction on 10% early bookings
         if (!showtimeService.getShowtimeById(showtimeId).getMovie().isPublic() && 
             seatAvailabilityService.isTenPercentOrMoreBooked(showtimeId, seatIds.size())) {
@@ -49,7 +52,7 @@ public class PurchaseTicketService extends PaymentService{
             seatAvailabilityService.reserveSeat(seatIds.get(i), showtimeId);
             tickets.add(ticketService.createTicket(seatService.getSeatById(seatIds.get(i)).getPrice(), 
                                                     email, 
-                                                    registeredUserService.getUserById(registeredUserId),
+                                                    null,
                                                     showtimeService.getShowtimeById(showtimeId), 
                                                     seatService.getSeatById(seatIds.get(i))));
         }
@@ -67,14 +70,15 @@ public class PurchaseTicketService extends PaymentService{
     }
 
     private String buildTicketEmail(List<Ticket> tickets) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a");
         String emailbody = "Your tickets are attached below. Enjoy!\n\n" +
-                            "Showtime: " + tickets.get(0).getShowtime().getStartTime().toString() + "\n" +
-                            "Theater: " + tickets.get(0).getSeat().getTheater().getName() + "\n";
+                            "Showtime: " + tickets.get(0).getShowtime().getStartTime().format(formatter) + "\n" +
+                            "Theater: " + tickets.get(0).getSeat().getTheater().getName() + "\n\n";
         for (int i = 0; i < tickets.size(); i++) {
             emailbody = emailbody.concat(
                 "Ticket " + i + "\n" +
                 "\tTicket Code: " + tickets.get(i).getCode() + "\n" +
-                "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n"
+                "\tSeat: " + tickets.get(i).getSeat().getSeatNumber() + "\n\n"
             );
         } 
         return emailbody;

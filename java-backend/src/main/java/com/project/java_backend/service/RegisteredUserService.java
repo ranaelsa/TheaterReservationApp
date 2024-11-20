@@ -75,7 +75,6 @@ public class RegisteredUserService {
     public RegisteredUser authenticate(String email, String password) {
         RegisteredUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-
         if (passwordEncoder.matches(password, user.getPassword())) {
             return user;
         } else {

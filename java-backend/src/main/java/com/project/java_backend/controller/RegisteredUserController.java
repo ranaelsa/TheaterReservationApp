@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -52,8 +53,8 @@ public class RegisteredUserController {
 
     // Authenticate user
     @PostMapping(value="/login", consumes="application/json", produces="application/json")
-    public ResponseEntity<RegisteredUser> authenticateUser(@RequestBody RegisteredUser loginRequest) {
-        RegisteredUser authenticatedUser = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<RegisteredUser> authenticateUser(@RequestBody Map<String, String> loginRequest) {
+        RegisteredUser authenticatedUser = userService.authenticate(loginRequest.get("email"), loginRequest.get("password"));
         return ResponseEntity.ok(authenticatedUser);
     }
 }

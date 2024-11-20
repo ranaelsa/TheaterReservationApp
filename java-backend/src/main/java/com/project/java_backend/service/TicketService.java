@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,13 +77,14 @@ public class TicketService {
     }
 
     private String buildCancellationEmail(Ticket ticket, Coupon coupon) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a");
         return "Your ticket has been successfully canceled.\n\n" +
                 "Ticket Code: " + ticket.getCode() + "\n" +
-                "Showtime: " + ticket.getShowtime().getStartTime() + "\n" +
+                "Showtime: " + ticket.getShowtime().getStartTime().format(formatter) + "\n" +
                 "Seat: " + ticket.getSeat().getSeatNumber() + "\n" +
                 "Refund Amount: $" + String.format("%.2f", coupon.getAmount()) + "\n\n" +
                 "Coupon Code: " + coupon.getCouponCode() + "\n" +
-                "Expiration Date: " + coupon.getExpirationDate() + "\n" +
+                "Expiration Date: " + coupon.getExpirationDate().format(formatter) + "\n" +
                 "Thank you for choosing AcmePlex!";
     }
     // Retrieve a single ticket by ID
