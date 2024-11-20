@@ -22,8 +22,10 @@ const useApi = (endpoint, method = 'GET') => {
             setData(response.data);
             return response.data;
         } catch (err) {
-            setError(err.response.data || err.message || 'Something went wrong');
-            console.error(err);
+            const errorMessage = err.response?.data?.message || err.message || 'Something went wrong';
+            setError(errorMessage);
+            // Throw the error so it can be caught in the component
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -33,4 +35,3 @@ const useApi = (endpoint, method = 'GET') => {
 };
 
 export default useApi;
-

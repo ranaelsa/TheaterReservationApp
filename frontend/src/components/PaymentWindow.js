@@ -180,8 +180,8 @@ const PaymentWindow = () => {
         router.push('/');
       }
     } catch (err) {
-      console.error('Payment error:', err);
-      alert('Payment failed, please try again.');
+      const errorMessage = err.response?.data || 'Payment failed, please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -289,6 +289,9 @@ const PaymentWindow = () => {
 
         <button
           type="submit"
+          onClick={(e) => {console.log('Button clicked');
+            handlePayment;
+          }}
           className="w-full bg-[#854d0e] hover:bg-[#a16207] text-white py-2 rounded-lg font-bold"
         >
           {payLoading ? 'Processing Payment...' : 'Complete Payment'}
