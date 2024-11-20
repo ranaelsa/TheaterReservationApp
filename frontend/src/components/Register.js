@@ -92,6 +92,7 @@ const Register = () => {
       } catch (apiError) {
         console.error('API Error:', apiError);
         // Error message handling is done in the hook itself
+        setErrors({ ...errors, apiError: apiError.response.data || 'An error occurred, please try again.' });
       }
     } else {
       setErrors(currentErrors);
@@ -103,8 +104,8 @@ const Register = () => {
       <h1 className="text-2xl font-bold mb-8">Become a Registered User Today!</h1>
 
       {/* Display error message here */}
-      {error && (
-        <p className="text-red-600 text-sm mt-2 mb-2 font-bold rounded">{error}</p> // Changed the color slightly and added margin-top
+      {errors.apiError && (
+        <p className="text-red-600 text-sm mt-2 mb-2 font-bold rounded">{errors.apiError}</p> // Changed the color slightly and added margin-top
       )}
 
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
