@@ -50,6 +50,12 @@ const PaymentWindow = () => {
     'GET'
   );
 
+  // Use the API to redeem a coupon
+  const { callApi: redeemCoupon, data: redeemedCoupon, error: couponRedemptionError } = useApi(
+    coupon ? `http://localhost:8080/api/coupons/redeem/${coupon}` : null,
+    'PUT'
+  );
+
   // Use API to get cost of tickets
   const { callApi: getTicketCost, data: ticketCost, error: ticketCostError } = useApi(
     'http://localhost:8080/api/tickets/cost', 'POST'
@@ -175,6 +181,7 @@ const PaymentWindow = () => {
       const response = await makePayment(paymentDetails);
 
       if (response) {
+        await redeemCoupon(); // Redeem the coupon after payment
         alert('Payment successful!');
         // Redirect to confirmation or home page
         router.push('/');
