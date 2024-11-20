@@ -192,7 +192,9 @@ const PaymentWindow = () => {
       const response = await makePayment(paymentDetails);
 
       if (response) {
-        await redeemCoupon(); // Redeem the coupon after payment
+        if (appliedCoupon) {
+          await redeemCoupon(); // Redeem the coupon after payment
+        }
         alert('Payment successful!');
         // Redirect to confirmation or home page
         router.push('/');
