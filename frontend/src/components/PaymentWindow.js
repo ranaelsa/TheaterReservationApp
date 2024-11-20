@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useShowtime } from '../context/ShowtimeContext'; // Import custom context for selected options
 import useApi from '../hooks/useApi'; // Ensure this is your custom hook
+import { useRouter } from 'next/navigation';
 
-const PaymentWindow = ({ onCompletePayment }) => {
+const PaymentWindow = () => {
   const { selectedMovie, selectedTheater, selectedShowtime, selectedSeats } = useShowtime();
+  const router = useRouter();
 
   // Log the values from ShowtimeContext
   useEffect(() => {
@@ -38,7 +40,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
     'GET'
   );
 
-  const { callApi: makePayment, loading: payLoading, error: payError } = useApi(
+  const { callApi: makePayment, data: payData, loading: payLoading, error: payError } = useApi(
     'http://localhost:8080/api/payment/tickets', 'POST'
   );
 
@@ -146,6 +148,7 @@ const PaymentWindow = ({ onCompletePayment }) => {
   };
 
   const handlePayment = async (e) => {
+    console.log('handlePayment called');
     e.preventDefault();
 
     // Ensure there are no validation errors
@@ -159,6 +162,8 @@ const PaymentWindow = ({ onCompletePayment }) => {
       seatIds: selectedSeats,
       cardNumber,
       email,
+      price: finalAmount,
+      registeredUserId: null,
     };
 
     if (userID) {
@@ -166,13 +171,13 @@ const PaymentWindow = ({ onCompletePayment }) => {
     }
 
     try {
-      const result = await makePayment(paymentDetails);
+      console.log('Payment details:', paymentDetails);
+      const response = await makePayment(paymentDetails);
 
-      if (result && result.success) {
+      if (response) {
         alert('Payment successful!');
-        onCompletePayment(); // Redirect to confirmation or home page
-      } else {
-        alert('Payment failed, please try again.');
+        // Redirect to confirmation or home page
+        router.push('/');
       }
     } catch (err) {
       console.error('Payment error:', err);
@@ -285,7 +290,6 @@ const PaymentWindow = ({ onCompletePayment }) => {
         <button
           type="submit"
           className="w-full bg-[#854d0e] hover:bg-[#a16207] text-white py-2 rounded-lg font-bold"
-          disabled={payLoading}
         >
           {payLoading ? 'Processing Payment...' : 'Complete Payment'}
         </button>
