@@ -65,26 +65,37 @@ const PaymentWindow = () => {
   const handleUseSavedPaymentInfo = async () => {
     await getSavedInfo(); // Fetch user data
     console.log('User data:', userInfo);
+  };
+
+  useEffect(() => {
     if (userInfo) {
+      console.log('User data:', userInfo);
       setCardNumber(userInfo.cardNumber || '');
       setExpiry(userInfo.expiryDate || '');
       setCvc(userInfo.cvc || '');
       setEmail(userInfo.email || '');
     }
-  };
+  }, [userInfo]); 
+
 
   // Handle coupon application
   const useCoupon = async () => {
+    try {
     if (coupon) {
       await applyCoupon();
-      if (appliedCoupon) {
-        setDiscount(appliedCoupon.amount);
-        setFinalAmount(totalAmount - appliedCoupon.amount);
-      } else if (couponApplicationError) {
-        alert('Invalid coupon code');
-      }
+    }
+   } catch (err) {
+      const errorMessage = err.response?.data || 'Payment failed, please try again.';
+      alert(errorMessage);
     }
   };
+
+  useEffect(() => {
+    if (appliedCoupon) {
+      setDiscount(appliedCoupon.amount);
+      setFinalAmount(totalAmount - appliedCoupon.amount);
+    }
+  }, [appliedCoupon]);
 
   // Calculate total amount
   useEffect(() => {
