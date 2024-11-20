@@ -58,11 +58,11 @@ public class TicketService {
         Double couponAmount = calculateRefundAmount(ticket);
         Coupon coupon = couponService.createCoupon(couponAmount);
 
-        // Send cancellation email with coupon
-        emailService.sendSimpleEmail(ticket.getEmail(), "Ticket Cancellation", buildCancellationEmail(ticket, coupon));
-
         // Delete ticket
-        ticketRepository.deleteByCode(code);
+        ticketRepository.deleteById(ticket.getId());
+
+         // Send cancellation email with coupon
+         emailService.sendSimpleEmail(ticket.getEmail(), "Ticket Cancellation", buildCancellationEmail(ticket, coupon));
     }
 
     private void validateCancellationTime(Ticket ticket) {
