@@ -14,18 +14,8 @@ public class PurchaseAccountService extends PaymentService{
 	public RegisteredUser purchaseAccount(RegisteredUser user) {
 
 		// Validate user inputs before processing payment
-		if (user.getCardNumber() == null ||
-			user.getExpiryDate() == null ||
-			user.getCvc() == null ||
-			user.getCardNumber().isBlank() || 
-			user.getCardNumber().length() != 16 ||
-			user.getExpiryDate().isBlank() || 
-			user.getExpiryDate().length() != 4 ||
-			user.getCvc().isBlank() || 
-			user.getCvc().length() != 3
-			) {
-				throw new IllegalArgumentException("Invalid card details");
-		}
+		registeredUserService.testUser(user);
+
 		makePayment(20.0, user.getCardNumber(), user.getEmail());
 
 		return registeredUserService.createUser(user);

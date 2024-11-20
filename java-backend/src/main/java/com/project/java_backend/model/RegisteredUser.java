@@ -32,12 +32,15 @@ public class RegisteredUser {
 
     // Payment Information
     @Size(min = 16, max = 16, message = "Card number must be 16 digits")
+    @NotBlank(message = "Card number is required")
     private String cardNumber;
 
-    @Size(min = 4, max = 4, message = "Date must be in format MMYY")
+    @Size(min = 4, max = 4, message = "Expiry date must be in format MMYY")
+    @NotBlank(message = "Card expiry date is required")
     private String expiryDate;
 
     @Size(min = 3, max = 3, message = "CVC must be 3 digits")
+    @NotBlank(message = "CVC is required")
     private String cvc;
 
     // Relationships

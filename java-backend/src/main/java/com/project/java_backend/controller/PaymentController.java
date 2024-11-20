@@ -47,6 +47,7 @@ public class PaymentController {
 	// Purchase and create account
 	@PostMapping(value="/account", consumes="application/json", produces="application/json")
 	public ResponseEntity<RegisteredUser> purchaseAccount(@RequestBody RegisteredUser user) {
+	
 		RegisteredUser createdUser = purchaseAccountService.purchaseAccount(user);
 		return ResponseEntity.ok(createdUser);
 	}
