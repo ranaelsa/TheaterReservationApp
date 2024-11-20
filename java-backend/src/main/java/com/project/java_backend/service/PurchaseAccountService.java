@@ -14,14 +14,21 @@ public class PurchaseAccountService extends PaymentService{
 	public RegisteredUser purchaseAccount(RegisteredUser user) {
 
 		// Validate user inputs before processing payment
-		RegisteredUser testUser = registeredUserService.createUser(user);
-		registeredUserService.deleteUser(testUser.getId());
-
+		if (user.getCardNumber() == null ||
+			user.getExpiryDate() == null ||
+			user.getCvc() == null ||
+			user.getCardNumber().isBlank() || 
+			user.getCardNumber().length() != 16 ||
+			user.getExpiryDate().isBlank() || 
+			user.getExpiryDate().length() != 4 ||
+			user.getCvc().isBlank() || 
+			user.getCvc().length() != 3
+			) {
+				throw new IllegalArgumentException("Invalid card details");
+		}
 		makePayment(20.0, user.getCardNumber(), user.getEmail());
 
-		registeredUserService.createUser(user);
-
-		return user;
+		return registeredUserService.createUser(user);
 	}
 
 	@Override
