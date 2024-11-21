@@ -34,7 +34,8 @@ const PaymentWindow = () => {
     email: ''
   });
 
-  const userID = parseInt(localStorage.getItem('userID')); // Check if the user is logged in
+  const userID = parseInt(localStorage.getItem('userID'), 10) || null;
+
 
   const { callApi: getSavedInfo, data: userInfo, loading, error } = useApi(
     userID ? `http://localhost:8080/api/users/${userID}` : null,
