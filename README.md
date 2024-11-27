@@ -12,7 +12,7 @@ In order to run this program, you must have Java and NodeJS installed on your sy
     1. Ensure that both Maven and SQL are installed on your system.
     2. Initialize a local database using the 'group4.sql' dump file. Take note of the database URL, username and password.
     3. Download and unpack the 'group4java.zip' file and navigate into the 'java-backend' folder.
-    4. Open the 'application.properties' file and replace the following variables with your local database information:
+    4. Add the 'application.properties' file found in 'group4Config.zip' to this folder and replace the following variables with your local database information:
     ```
     spring.datasource.url=<replace with your url>
     spring.datasource.username=<replace with your username>
