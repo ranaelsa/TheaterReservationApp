@@ -7,7 +7,7 @@ In order to run this program, you must have Java and NodeJS installed on your sy
 2. Open a command terminal in the directory containing the 'group4.jar' file and the 'application.properties' file. Run the command ```java -jar group4.jar``` to start the server. If the server stops with an error, please ensure that both files are in the same directory.
 2. Next, to run the frontend React app, download and unpack the 'group4Web.zip' file.
 3. Open a command console and navigate into the 'frontend' folder unpacked from the zip file. Run the command 'npm install' to initialize the required packages.
-4. Run the command 'npm start'. You should now be able to open a browser at http://localhost:3000 to use the app.
+4. Run the command 'npm run dev'. You should now be able to open a browser at http://localhost:3000 to use the app.
 5. Our SQL database is hosted on a cloud service and our spring-boot server is already setup to connect to this database on startup. If you instead want to set up a local database using the dump file, you must complete additional steps:
     1. Ensure that both Maven and SQL are installed on your system.
     2. Initialize a local database using the 'group4.sql' dump file. Take note of the database URL, username and password.
