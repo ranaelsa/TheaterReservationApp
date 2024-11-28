@@ -91,4 +91,11 @@ public class PaymentService {
         }
         paymentRepository.deleteById(id);
     }
+
+    // Renew account by charging the user
+    public void renewAccount(String cardNumber, String email) {
+        Double renewalAmount = 20.00; // Annual account fee
+        makePayment(renewalAmount, cardNumber, email);
+    }
+
 }
