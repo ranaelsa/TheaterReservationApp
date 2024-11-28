@@ -1,5 +1,7 @@
 package com.project.java_backend.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class PurchaseAccountService extends PaymentService{
 		registeredUserService.testUser(user);
 
 		makePayment(20.0, user.getCardNumber(), user.getEmail());
+
+		// Set lastAccountCharge for user to current time
+    	user.setLastAccountCharge(LocalDateTime.now());
 
 		return registeredUserService.createUser(user);
 	}
