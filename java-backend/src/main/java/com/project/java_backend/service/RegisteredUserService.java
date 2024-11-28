@@ -109,11 +109,11 @@ public class RegisteredUserService {
         if (passwordEncoder.matches(password, user.getPassword())) {
             // Check if the last account charge was more than a year ago
             if (user.getLastAccountCharge().isBefore(LocalDateTime.now().minusYears(1))) {
-            // Renew the account
-            paymentService.renewAccount(user.getCardNumber(), user.getEmail());
-            // Update the lastAccountCharge to today's date
-            user.setLastAccountCharge(LocalDateTime.now());
-            userRepository.save(user); // Save the updated user
+                // Renew the account
+                paymentService.renewAccount(user.getCardNumber(), user.getEmail());
+                // Update the lastAccountCharge to today's date
+                user.setLastAccountCharge(LocalDateTime.now());
+                userRepository.save(user); // Save the updated user
             }
             return user;
         } else {
