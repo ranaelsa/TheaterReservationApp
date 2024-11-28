@@ -2,11 +2,11 @@ package com.project.java_backend.model;
 
 import jakarta.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import java.util.Set;
 
 @Entity
 public class RegisteredUser {
@@ -43,15 +43,17 @@ public class RegisteredUser {
     @NotBlank(message = "CVC is required")
     private String cvc;
 
+    @Column(nullable = true)
+    private LocalDateTime lastAccountCharge;
+
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-tickets")
     @JsonIgnore
     private Set<Ticket> tickets;
 
-    //Default constructor
-    public RegisteredUser(){
-
+    // Default constructor
+    public RegisteredUser() {
     }
 
     public RegisteredUser(String name, String email, String password, String address, String cardNumber, String expiryDate, String cvc) {
@@ -65,6 +67,10 @@ public class RegisteredUser {
     }
 
     // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -72,7 +78,7 @@ public class RegisteredUser {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getEmail() {
         return email;
     }
@@ -121,7 +127,11 @@ public class RegisteredUser {
         this.cvc = cvc;
     }
 
-    public Long getId() {
-        return id;
+    public LocalDateTime getLastAccountCharge() {
+        return lastAccountCharge;
+    }
+
+    public void setLastAccountCharge(LocalDateTime lastAccountCharge) {
+        this.lastAccountCharge = lastAccountCharge;
     }
 }

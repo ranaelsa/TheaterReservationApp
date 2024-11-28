@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,6 +19,9 @@ public class RegisteredUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PaymentService paymentService;
 
     // Get all users
     public List<RegisteredUser> getAllUsers() {
@@ -104,6 +107,14 @@ public class RegisteredUserService {
         RegisteredUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
         if (passwordEncoder.matches(password, user.getPassword())) {
+            // Check if the last account charge was more than a year ago
+            if (user.getLastAccountCharge().isBefore(LocalDateTime.now().minusYears(1))) {
+                // Renew the account
+                paymentService.renewAccount(user.getCardNumber(), user.getEmail());
+                // Update the lastAccountCharge to today's date
+                user.setLastAccountCharge(LocalDateTime.now());
+                userRepository.save(user); // Save the updated user
+            }
             return user;
         } else {
             throw new IllegalArgumentException("Invalid email or password");
